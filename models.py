@@ -21,7 +21,7 @@ class User(db.Model):
     )
 
     password = db.Column(
-        db.Text,
+        db.String(25),
         nullable=False,
     )
 
@@ -84,8 +84,7 @@ class Playlist(db.Model):
     )
 
     description = db.Column(
-        db.Text,
-        nullable=False,
+        db.String(140)
     )
 
     user_id = db.Column(
@@ -125,19 +124,19 @@ class Song(db.Model):
     )
 
     track_name = db.Column(
-        db.String(20),
+        db.String(25),
         nullable=False,
         unique=True,
     )
 
     track_uri = db.Column(
-        db.String(20),
+        db.String(25),
         nullable=False,
         unique=True,
     )
 
     artist_name = db.Column(
-        db.String(20),
+        db.String(25),
         nullable=False,
         unique=True,
     )
@@ -228,13 +227,13 @@ class Artist(db.Model):
     )
 
     name = db.Column(
-        db.String(20),
+        db.String(50),
         nullable=False,
         unique=True,
     )
 
     spotify_artist_id = db.Column(
-        db.String(20),
+        db.String(50),
         nullable=False,
         unique=True,
     )
