@@ -3,13 +3,13 @@ from wtforms import StringField, PasswordField, TextAreaField, IntegerField, Ema
 from wtforms.validators import DataRequired, Email, Length
 
 
-class SignInForm(FlaskForm):
+class SignUpForm(FlaskForm):
     """Form for signing up a new user."""
 
     username = StringField('Username', validators=[DataRequired(), Length(min=3, max=20)])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=6, max=25)])
     email = EmailField('Email', validators=[DataRequired(), Email()])
-    user_img = StringField('User Image', validators=[DataRequired(), Length(min=3, max=100)])
+    user_img = StringField('Image URL (Optional) ')
 
 
 class LoginForm(FlaskForm):
