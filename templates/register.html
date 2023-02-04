@@ -4,7 +4,7 @@
 <h1 class="display-3">Sign Up!</h1>
 <p class="lead">Without music life would be a mistake</p>
 
-<form action="POST">
+<form method="POST">
     {{ form.hidden_tag() }}
     {% for field in form 
         if field.widget.input_type != 'hidden' %}
@@ -18,7 +18,7 @@
             {% endif %}
         </div>
     {% endfor %}
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" class="btn btn-primary" >Submit</button>
 
 </form>
 

@@ -22,7 +22,7 @@ def get_token():
     data = {'grant_type': 'client_credentials'}
     result = post(url, headers=headers, data=data)
     token = result.json()['access_token']
-    return token
+    # return token
 
 
 def get_auth_header(token):
@@ -47,15 +47,15 @@ def get_songs(artist_id, token):
 
     result = get(url, headers=headers)
     json_result = result.json()['tracks']
-    return json_result
+    # return json_result
 
-token = get_token()
-res = search_artist('Metallica', token)
-artist_id = res[0]['id']
-songs = get_songs(artist_id, token)
+# token = get_token()
+# res = search_artist('Metallica', token)
+# artist_id = res[0]['id']
+# songs = get_songs(artist_id, token)
 
-for song in songs:
-    print(song['name'])
+# for song in songs:
+#     print(song['name'])
 
 # print(artist_id)
 # print(res)

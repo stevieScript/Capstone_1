@@ -2,7 +2,9 @@ from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
-from forms import SignUpForm, LoginForm 
+from helper_functions import get_token, get_auth_header, search_artist, get_songs
+
+from forms import SignUpForm, LoginForm, SpotifySearchForm 
 from models import db, connect_db, User, Song, Artist, ArtistSong, Playlist, PlaylistSong
 
 CURR_USER_KEY = "curr_user"
@@ -18,6 +20,7 @@ app.config['SECRET_KEY'] = 'maestro'
 toolbar = DebugToolbarExtension(app)
 
 connect_db(app)
+
 
 @app.before_request
 def add_user_to_g():
@@ -43,7 +46,10 @@ def do_logout():
 @app.route('/')
 def homepage():
     """Show homepage."""
-    return render_template('base.html')
+    if g.user:
+        return render_template('home.html')
+    else:
+        return render_template('base.html')
 
 @app.route('/register', methods=["GET", "POST"])
 def signup():
@@ -52,11 +58,11 @@ def signup():
 
     if form.validate_on_submit():
         try:
-            user = User.signup(
+            user = User.register(
                 username=form.username.data,
                 password=form.password.data,
                 email=form.email.data,
-                user_img=form.user_img.data
+                # user_img=form.user_img.data
             )
             db.session.commit()
         except IntegrityError:
@@ -64,7 +70,8 @@ def signup():
             return render_template('register.html', form=form)
         
         do_login(user)
-        return redirect("/")
+        flash(f"Welcome, maestro {user.username}!", 'success')
+        return render_template('home.html')
 
     else:
         return render_template('register.html', form=form)
@@ -81,7 +88,7 @@ def login():
                                  form.password.data)
         if user:
             do_login(user)
-            return redirect(f"/users/{user.id}")
+            return redirect(f'/users/{g.user.id}')
 
         flash("Invalid credentials.", 'danger')
 
@@ -96,3 +103,95 @@ def logout():
     return redirect('/')
 
 
+@app.route('/user/<int:user_id>')
+def user_profile(user_id):
+    """Show user profile."""
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    user = User.query.get_or_404(user_id)
+    return render_template('user.html', user=user)
+
+
+# @app.route('/users/<int:user_id>/delete', methods=["POST"])
+# def delete_user(user_id):
+#     """Delete user."""
+
+#     if not g.user:
+#         flash("Access unauthorized.", "danger")
+#         return redirect("/")
+
+#     user = User.query.get_or_404(user_id)
+#     db.session.delete(user)
+#     db.session.commit()
+#     do_logout()
+#     flash("User deleted", 'success')
+#     return redirect('/')
+
+# @app.route('/users/<int:user_id>/edit', methods=["GET", "POST"])
+# def edit_user(user_id):
+#     """Edit user profile."""
+
+#     if not g.user:
+#         flash("Access unauthorized.", "danger")
+#         return redirect("/")
+
+#     user = User.query.get_or_404(user_id)
+#     form = SignUpForm(obj=user)
+
+#     if form.validate_on_submit():
+#         user.username = form.username.data
+#         user.email = form.email.data
+#         user.user_img = form.user_img.data
+
+#         db.session.commit()
+#         flash("User updated", 'success')
+#         return redirect(f"/users/{user.id}")
+
+#     else:
+#         return render_template('edit_user.html', form=form, user=user)
+    
+
+
+# @app.route('/users/<int:user_id>/playlists')
+# def show_playlists(user_id):
+#     """Show user playlists."""
+
+#     if not g.user:
+#         flash("Access unauthorized.", "danger")
+#         return redirect("/")
+
+#     user = User.query.get_or_404(user_id)
+#     return render_template('playlists.html', user=user)
+
+@app.route('/user/<int:user_id>/search', methods=["GET", "POST"])
+def search(user_id):
+    """Search for songs on Spotify."""
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    form = SpotifySearchForm()
+    if form.validate_on_submit():
+        token = get_token()
+        auth_header = get_auth_header(token)
+        artist = search_artist(form.artist_name.data, auth_header)
+        songs = get_songs(artist, auth_header)
+        # album = songs[0]['album']['name']
+        # album_art = songs[0]['album']['images'][0]['url']
+        return render_template('search_results.html', songs=songs, artist=artist)
+    else:
+        return render_template('search.html', form=form)
+    
+
+
+# @app.after_request
+# def add_header(req):
+#     """Add non-caching headers on every request."""
+
+#     req.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+#     req.headers["Pragma"] = "no-cache"
+#     req.headers["Expires"] = "0"
+#     req.headers['Cache-Control'] = 'public, max-age=0'
+#     return req

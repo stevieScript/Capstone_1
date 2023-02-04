@@ -6,17 +6,25 @@ from wtforms.validators import DataRequired, Email, Length
 class SignUpForm(FlaskForm):
     """Form for signing up a new user."""
 
-    username = StringField('Username', validators=[DataRequired(), Length(min=3, max=20)])
-    password = PasswordField('Password', validators=[DataRequired(), Length(min=6, max=25)])
-    email = EmailField('Email', validators=[DataRequired(), Email()])
-    user_img = StringField('Image URL (Optional) ')
+    username = StringField('Username', validators=[DataRequired()])
+    email = StringField('E-mail', validators=[DataRequired(), Email()])
+    password = PasswordField('Password', validators=[Length(min=6)])
+    # user_img = StringField('Image URL (Optional) ')
 
 
 class LoginForm(FlaskForm):
     """Form for logging in a user."""
 
-    username = StringField('Username', validators=[DataRequired(), Length(min=3, max=20)])
-    password = PasswordField('Password', validators=[DataRequired(), Length(min=6, max=25)])
+    username = StringField('Username', validators=[DataRequired(), Length(min=3)])
+    password = PasswordField('Password', validators=[ Length(min=6)])
+
+class SpotifySearchForm(FlaskForm):
+    ''' Form for searching Spotify'''
+
+    song = StringField('Search song name')
+    artist = StringField('Search artist name')
+    album = StringField('Search album name')
+
 
 
 

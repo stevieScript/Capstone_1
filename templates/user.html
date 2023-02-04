@@ -1,0 +1,17 @@
+{% extends 'base.html'  %}
+
+{% block content %}
+
+<h1 class="display-4">User</h1>
+<p class="lead">Welcome {{ user.username }}!</p>
+
+
+<form action="POST">
+    <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}">
+    </div>
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+{% endblock %}

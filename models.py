@@ -4,6 +4,9 @@ from flask_sqlalchemy import SQLAlchemy
 bcrypt = Bcrypt()
 db = SQLAlchemy()
 
+# db.drop_all()
+# db.create_all()
+
 class User(db.Model):
     """User in the system."""
 
@@ -15,26 +18,26 @@ class User(db.Model):
     )
 
     username = db.Column(
-        db.String(20),
+        db.Text,
         nullable=False,
         unique=True,
     )
 
     password = db.Column(
-        db.String(25),
+        db.Text,
         nullable=False,
     )
 
     email = db.Column(
-        db.String(50),
+        db.Text,
         nullable=False,
         unique=True,
     )
 
-    user_img = db.Column(
-        db.Text,
-        default='https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png'
-    )
+    # user_img = db.Column(
+    #     db.Text
+    #     # default='https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png'
+    # )
     
     playlists = db.relationship('Playlist', backref='user')
 
@@ -42,25 +45,25 @@ class User(db.Model):
         return f'<User {self.id} {self.username} {self.email}>'
 
     @classmethod
-    def register(cls, username, pwd, email, user_img):
+    def register(cls, username, password, email):
         """Register user w/hashed password & return user."""
 
-        hashed = bcrypt.generate_password_hash(pwd)
-        # turn bytestring into normal (unicode utf8) string
-        hashed_utf8 = hashed.decode("utf8")
+        hashed = bcrypt.generate_password_hash(password).decode('UTF-8')
 
-        # return instance of user w/username and hashed pwd
-        return cls(username=username, password=hashed_utf8, email=email, user_img=user_img)
+        user = User(username=username, password=hashed, email=email)
+        db.session.add(user)
+        # return instance of user w/username and hashed password
+        return user
 
     @classmethod
-    def authenticate(cls, username, pwd):
+    def authenticate(cls, username, password):
         """Validate that user exists & password is correct.
         Return user if valid; else return False.
         """
 
         u = User.query.filter_by(username=username).first()
 
-        if u and bcrypt.check_password_hash(u.password, pwd):
+        if u and bcrypt.check_password_hash(u.password, password):
             # return user instance
             return u
         else:
@@ -78,7 +81,7 @@ class Playlist(db.Model):
     )
 
     name = db.Column(
-        db.String(20),
+        db.Text,
         nullable=False,
         unique=True,
     )
@@ -93,9 +96,9 @@ class Playlist(db.Model):
         nullable=False
     )
 
-    user = db.relationship('User', backref='playlists')
+    # user = db.relationship('User', backref='playlists')
 
-    songs = db.relationship('Song', secondary='playlist_songs', backref='playlists')
+    songs = db.relationship('Song', secondary='playlist_songs', backref='playlist_songs')
 
     def __repr__(self):
         return f'<Playlist {self.id} {self.name} {self.description}>'
@@ -118,25 +121,25 @@ class Song(db.Model):
     )
 
     spotify_track_id = db.Column(
-        db.String(20),
+        db.Text,
         nullable=False,
         unique=True,
     )
 
     track_name = db.Column(
-        db.String(25),
+        db.Text,
         nullable=False,
         unique=True,
     )
 
     track_uri = db.Column(
-        db.String(25),
+        db.Text,
         nullable=False,
         unique=True,
     )
 
     artist_name = db.Column(
-        db.String(25),
+        db.Text,
         nullable=False,
         unique=True,
     )
@@ -207,7 +210,7 @@ class PlaylistSong(db.Model):
     )
 
     playlist = db.relationship('Playlist', backref='playlist_songs')
-    song = db.relationship('Song', backref='playlist_songs')
+    # song = db.relationship('Song', backref='playlist_songs')
 
     @classmethod
     def create_playlist_song(cls, playlist_id, song_id):
@@ -227,13 +230,13 @@ class Artist(db.Model):
     )
 
     name = db.Column(
-        db.String(50),
+        db.Text,
         nullable=False,
         unique=True,
     )
 
     spotify_artist_id = db.Column(
-        db.String(50),
+        db.Text,
         nullable=False,
         unique=True,
     )
@@ -271,7 +274,7 @@ class ArtistSong(db.Model):
     )
 
     artist = db.relationship('Artist', backref='artist_songs')
-    song = db.relationship('Song', backref='artist_songs')
+    # song = db.relationship('Song', backref='artist_songs')
 
     def __repr__(self):
         return f'<ArtistSong {self.id} {self.artist_id} {self.song_id}>'
