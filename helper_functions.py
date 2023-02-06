@@ -2,8 +2,12 @@ from dotenv import load_dotenv
 import os
 import base64
 from requests import post, get
+import dotenv
 
-load_dotenv()
+dotenv.load_dotenv('.env')
+
+
+
 
 client_id = os.getenv('CLIENT_ID')
 client_secret = os.getenv('CLIENT_SECRET')
@@ -22,7 +26,7 @@ def get_token():
     data = {'grant_type': 'client_credentials'}
     result = post(url, headers=headers, data=data)
     token = result.json()['access_token']
-    # return token
+    return token
 
 
 def get_auth_header(token):
@@ -47,7 +51,7 @@ def get_songs(artist_id, token):
 
     result = get(url, headers=headers)
     json_result = result.json()['tracks']
-    # return json_result
+    return json_result
 
 # token = get_token()
 # res = search_artist('Metallica', token)

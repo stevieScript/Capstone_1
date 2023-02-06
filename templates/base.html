@@ -13,12 +13,12 @@
         <div class="container">
           <a href="/" class="navbar-brand text-light">MAESTRO</a>
           <ul class="nav navbar-nav flex-row float-right">
-            {% if session['CURR_USER_KEY'] %}
+            {% if g.user.id %}
             <li class="nav-item">
-              <a class="nav-link pr-3 text-light" href="/logout">Search</a>
+              <a class="nav-link pr-3 text-light" href="/user/{{g.user.id}}/search">Search</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link pr-3 text-light" href="/logout">Playlists</a>
+              <a class="nav-link pr-3 text-light" href="/user/{{g.user.id}}/playlists">Playlists</a>
             </li>
             <li class="nav-item">
               <a class="nav-link pr-3 text-light" href="/logout">Logout</a>

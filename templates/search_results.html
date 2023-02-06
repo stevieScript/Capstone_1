@@ -1,0 +1,18 @@
+{% extends 'base.html'  %}
+
+{% block content %}
+
+<h1>HI</h1>
+
+{% if songs %}
+    <h2>Results for {{ artist_name }}</h2>
+    <ul>
+        {% for song in songs %}
+            <li>
+                <p>{{song['name']}}</p>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% endblock %}

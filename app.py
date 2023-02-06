@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
-from helper_functions import get_token, get_auth_header, search_artist, get_songs
+from helper_functions import get_token, search_artist, get_songs
 
 from forms import SignUpForm, LoginForm, SpotifySearchForm 
 from models import db, connect_db, User, Song, Artist, ArtistSong, Playlist, PlaylistSong
@@ -71,7 +71,7 @@ def signup():
         
         do_login(user)
         flash(f"Welcome, maestro {user.username}!", 'success')
-        return render_template('home.html')
+        return redirect(f'/users/{user.id}')
 
     else:
         return render_template('register.html', form=form)
@@ -88,7 +88,7 @@ def login():
                                  form.password.data)
         if user:
             do_login(user)
-            return redirect(f'/users/{g.user.id}')
+            return redirect(f'/user/{user.id}')
 
         flash("Invalid credentials.", 'danger')
 
@@ -106,6 +106,7 @@ def logout():
 @app.route('/user/<int:user_id>')
 def user_profile(user_id):
     """Show user profile."""
+
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
@@ -173,14 +174,18 @@ def search(user_id):
         return redirect("/")
 
     form = SpotifySearchForm()
+
+    user = User.query.get_or_404(user_id)
+
     if form.validate_on_submit():
         token = get_token()
-        auth_header = get_auth_header(token)
-        artist = search_artist(form.artist_name.data, auth_header)
-        songs = get_songs(artist, auth_header)
+        artist = search_artist(form.artist.data, token)
+        artist_id = artist[0]['id'] 
+        songs = get_songs(artist_id, token)
         # album = songs[0]['album']['name']
         # album_art = songs[0]['album']['images'][0]['url']
-        return render_template('search_results.html', songs=songs, artist=artist)
+        
+        return render_template('search_results.html', songs=songs, user=user)
     else:
         return render_template('search.html', form=form)
     

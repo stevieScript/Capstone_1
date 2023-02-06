@@ -15,6 +15,7 @@ class User(db.Model):
     id = db.Column(
         db.Integer,
         primary_key=True,
+        autoincrement=True,
     )
 
     username = db.Column(
@@ -78,6 +79,7 @@ class Playlist(db.Model):
     id = db.Column(
         db.Integer,
         primary_key=True,
+        autoincrement=True,
     )
 
     name = db.Column(
@@ -118,6 +120,7 @@ class Song(db.Model):
     id = db.Column(
         db.Integer,
         primary_key=True,
+        autoincrement=True,
     )
 
     spotify_track_id = db.Column(
@@ -195,6 +198,7 @@ class PlaylistSong(db.Model):
     id = db.Column(
         db.Integer,
         primary_key=True,
+        autoincrement=True, 
     )
 
     playlist_id = db.Column(
@@ -227,6 +231,7 @@ class Artist(db.Model):
     id = db.Column(
         db.Integer,
         primary_key=True,
+        autoincrement=True,
     )
 
     name = db.Column(
@@ -259,6 +264,7 @@ class ArtistSong(db.Model):
     id = db.Column(
         db.Integer,
         primary_key=True,
+        autoincrement=True,
     )
 
     artist_id = db.Column(
