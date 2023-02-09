@@ -98,6 +98,8 @@ class Playlist(db.Model):
         nullable=False
     )
 
+    
+
     # user = db.relationship('User', backref='playlists')
 
     songs = db.relationship('Song', secondary='playlist_songs', backref='playlist_songs')
@@ -132,7 +134,6 @@ class Song(db.Model):
     track_name = db.Column(
         db.Text,
         nullable=False,
-        unique=True,
     )
 
     track_uri = db.Column(
@@ -144,7 +145,11 @@ class Song(db.Model):
     artist_name = db.Column(
         db.Text,
         nullable=False,
-        unique=True,
+    )
+
+    artist_id = db.Column(
+        db.Text,
+        nullable=False,
     )
 
     tempo = db.Column(
@@ -158,16 +163,16 @@ class Song(db.Model):
     )
 
     key = db.Column(
-        db.Integer,
+        db.Text,
         nullable=False,
     )
 
     mode = db.Column(
-        db.Integer,
+        db.Text,
         nullable=False,
     )
 
-    duration_ms = db.Column(
+    duration = db.Column(
         db.Integer,
         nullable=False,
     )

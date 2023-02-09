@@ -10,7 +10,7 @@
 <div class="card">
     <div class="card-body">
     {% if item.image != '' %}
-    <img src="{{item.image}}" alt="album art" class="img-thumbnail">
+    <img height="200px" width="200px" src="{{item.image}}" alt="album art" class="img-thumbnail img-fluid">
     {% endif %}
     <p>Track name: {{ item.name }}</p>
     <p>Artist: {{ item.artist }}</p>

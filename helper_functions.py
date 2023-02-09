@@ -106,15 +106,29 @@ def get_album_art(album_id, token):
     json_result = result.json()['images'][0]['url']
     return json_result
 
+def get_track_info(track_id, token):
+    url = f'https://api.spotify.com/v1/tracks/{track_id}'
+    headers = get_auth_header(token)
+    result = get(url, headers=headers)
+    json_result = result.json()
 
+    track_info = {
+        'spoifty_track_id': json_result['id'],
+        'track_name': json_result['name'],
+        'track_uri': json_result['uri'],
+        'artist_name': json_result['artists'][0]['name'],
+        'artist_id': json_result['artists'][0]['id'],
+        'album': json_result['album']['name'],
+        'album_art': json_result['album']['images'][0]['url']
+    }
+
+    return track_info
     
 def get_audio_analysis(track_id, token):
     url = f'https://api.spotify.com/v1/audio-analysis/{track_id}'
     headers = get_auth_header(token)
-
     result = get(url, headers=headers)
     data = result.json()['track']
-
     analysis = {
             'duration': round(data['duration'] / 60, 2),
             'key': keys[data['key']],
@@ -125,9 +139,11 @@ def get_audio_analysis(track_id, token):
             'time_signature_confidence': data['time_signature_confidence'],
             'tempo': data['tempo'],
             'tempo_confidence': data['tempo_confidence'],
+            'loudness': data['loudness'],
         }
-
-    
+    track_info = get_track_info(track_id, token)
+    analysis.update(track_info)
+    print(analysis)
     return analysis
     
 

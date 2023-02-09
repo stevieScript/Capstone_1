@@ -24,7 +24,16 @@ class SpotifySearchForm(FlaskForm):
     search_term = StringField('Search')
 
     search_type = SelectField('Search Type', choices=[('track', 'Track'), ('artist', 'Artist'), ('album', 'Album')])
-    
 
+class PlaylistForm(FlaskForm):
+    ''' Form for creating a playlist'''
+
+    playlist_name = StringField('Playlist Name', validators=[DataRequired()])
+    playlist_description = StringField('Playlist Description (Optional)')
+    
+class AddTrackForm(FlaskForm):
+    ''' Form for adding a track to a playlist'''
+
+    playlist = SelectField('Playlist')
 
 

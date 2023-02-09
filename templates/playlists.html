@@ -1,0 +1,41 @@
+{% extends 'base.html'  %}
+
+{% block content %}
+
+{% if playlist %}
+<h1>Playlist: {{playlist.name}}</h1>
+{% for track in playlist.tracks %}
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">{{track.name}}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">{{track.artist}}</h6>
+        <p class="card-text">{{track.album}}</p>
+        <a href="/audio_analysis/{{track.id}}" class="card-link">Audio Analysis</a>
+        <a href="/audio_features/{{track.id}}" class="card-link">Audio Features</a>
+    </div>
+</div>
+{% endfor %}
+{% else %}
+<form action="/user/{{user.id}}/playlists" method="POST">
+{{ form.hidden_tag() }}
+  
+    {% for field in form
+      if field.widget.input_type != 'hidden' %}
+    <p>
+      {{ field.label }}
+      {{ field(class_="form-control") }}
+  
+      {% for error in field.errors %}
+        <span class="form-text text-danger">{{ error }}</span>
+        {% endfor %}
+    </p>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary">Create Playlist</button>
+</form>
+{% endif %}
+
+
+
+
+{%endblock%}
