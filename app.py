@@ -189,30 +189,31 @@ def search(user_id):
     else:
         return render_template('search.html', form=form)
     
-@app.route('/audio_analysis/<track_id>')
-def audio_analysis(track_id):
+@app.route('/audio_analysis/<int:user_id>/<track_id>')
+def audio_analysis(track_id, user_id):
     """Show audio analysis of song."""
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
-    playlist = Playlist.query.get_or_404(playlist_id)
-    form = AddTrackForm()
-    user = session['user_id']
-    curr_in_playlist = [track.id for track in playlist.tracks]
-    form.playlist.choices = [(p.id, p.playlist_name) for p in user.playlists if p.id not in curr_in_playlist]
+    
+    # form = AddTrackForm()
+    # user = User.query.get_or_404(user_id)
+    # playlist = Playlist.query.get_or_404(form.playlist.data)
+    # curr_in_playlist = [track.id for track in playlist.tracks]
+    # form.playlist.choices = [(p.id, p.playlist_name) for p in user.playlists if p.id not in curr_in_playlist]
 
     token = get_token()
     result = get_audio_analysis(track_id, token)
 
-    if form.validate_on_submit():
-        playlist_id = form.playlist.data
-        playlist_song = PlaylistSong(playlist_id=playlist_id, track_id=track_id)
-        song  = Song(result)
-        db.session.add_all([playlist_song, song])
-        db.session.commit()
-        return redirect(f'/users/{user.id}/playlists/{playlist.id}')
-    else:
-        return render_template('audio_analysis.html', result=result, form=form, playlist=playlist)
+    # if form.validate_on_submit():
+    #     playlist_id = form.playlist.data
+    #     playlist_song = PlaylistSong(playlist_id=playlist_id, track_id=track_id)
+    #     song  = Song(result)
+    #     db.session.add_all([playlist_song, song])
+    #     db.session.commit()
+    #     return redirect(f'/users/{user.id}/playlists/{playlist.id}')
+    # else:
+    return render_template('audio_analysis.html', result=result)
     
 
 

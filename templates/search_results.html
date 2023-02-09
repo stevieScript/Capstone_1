@@ -15,7 +15,7 @@
     <p>Track name: {{ item.name }}</p>
     <p>Artist: {{ item.artist }}</p>
     <p>Album: {{ item.album }}</p>
-    <a href="/audio_analysis/{{item.id}}" class="card-link">Get track analysis for {{item.name}}</a>
+    <a href="/audio_analysis/{{user.id}}/{{item.id}}" class="card-link">Get track analysis for {{item.name}}</a>
 </div>
 </div>
 {% endif %}

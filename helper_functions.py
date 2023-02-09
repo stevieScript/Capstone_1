@@ -132,13 +132,13 @@ def get_audio_analysis(track_id, token):
     analysis = {
             'duration': round(data['duration'] / 60, 2),
             'key': keys[data['key']],
-            'key_confidence': data['key_confidence'],
+            'key_confidence': round(data['key_confidence'] * 100),
             'mode': mode[data['mode']],
-            'mode_confidence': data['mode_confidence'],
+            'mode_confidence': round(data['mode_confidence'] * 100),
             'time_signature': data['time_signature'],
-            'time_signature_confidence': data['time_signature_confidence'],
-            'tempo': data['tempo'],
-            'tempo_confidence': data['tempo_confidence'],
+            'time_signature_confidence': round(data['time_signature_confidence'] * 100),
+            'tempo': round(data['tempo']),
+            'tempo_confidence': round(data['tempo_confidence'] * 100),
             'loudness': data['loudness'],
         }
     track_info = get_track_info(track_id, token)
