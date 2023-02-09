@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
-from helper_functions import get_token, search_artist, get_songs
+from helper_functions import get_token, search_artist, get_songs, generic_search, get_audio_analysis, get_albums, get_album, get_album_tracks, get_album_art
 
 from forms import SignUpForm, LoginForm, SpotifySearchForm 
 from models import db, connect_db, User, Song, Artist, ArtistSong, Playlist, PlaylistSong
@@ -179,15 +179,22 @@ def search(user_id):
 
     if form.validate_on_submit():
         token = get_token()
-        artist = search_artist(form.artist.data, token)
-        artist_id = artist[0]['id'] 
-        songs = get_songs(artist_id, token)
-        # album = songs[0]['album']['name']
-        # album_art = songs[0]['album']['images'][0]['url']
-        
-        return render_template('search_results.html', songs=songs, user=user)
+        result = generic_search(form.search_type.data, form.search_term.data, token)
+        return render_template('search_results.html', result=result, user=user)
     else:
         return render_template('search.html', form=form)
+    
+@app.route('/audio_analysis/<track_id>')
+def audio_analysis(track_id):
+    """Show audio analysis of song."""
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    token = get_token()
+    result = get_audio_analysis(track_id, token)
+    
+    return render_template('audio_analysis.html', result=result)
     
 
 
