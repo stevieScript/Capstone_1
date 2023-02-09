@@ -4,8 +4,8 @@ from sqlalchemy.exc import IntegrityError
 
 from helper_functions import get_token, search_artist, get_songs, generic_search, get_audio_analysis, get_albums, get_album, get_album_tracks, get_album_art
 
-from forms import SignUpForm, LoginForm, SpotifySearchForm 
-from models import db, connect_db, User, Song, Artist, ArtistSong, Playlist, PlaylistSong
+from forms import SignUpForm, LoginForm, SpotifySearchForm, AddTrackForm, PlaylistForm  
+from models import db, connect_db, User, Song, Artist, ArtistSong, Playlist, PlaylistSong 
 
 CURR_USER_KEY = "curr_user"
 
@@ -155,16 +155,22 @@ def user_profile(user_id):
     
 
 
-# @app.route('/users/<int:user_id>/playlists')
-# def show_playlists(user_id):
-#     """Show user playlists."""
+@app.route('/user/<int:user_id>/playlists', methods=["GET", "POST"])
+def show_playlists(user_id):
+    """Show user playlists."""
 
-#     if not g.user:
-#         flash("Access unauthorized.", "danger")
-#         return redirect("/")
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    form = PlaylistForm()
+    user = User.query.get_or_404(user_id)
+    if form.validate_on_submit():
+        playlist = Playlist(name=form.playlist_name.data, user_id=user_id)
+        db.session.add(playlist)
+        db.session.commit()
+        return redirect(f'/user/{user_id}/playlists')
 
-#     user = User.query.get_or_404(user_id)
-#     return render_template('playlists.html', user=user)
+    return render_template('playlists.html', user=user, form=form)
 
 @app.route('/user/<int:user_id>/search', methods=["GET", "POST"])
 def search(user_id):
@@ -172,9 +178,8 @@ def search(user_id):
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
-
+    
     form = SpotifySearchForm()
-
     user = User.query.get_or_404(user_id)
 
     if form.validate_on_submit():
@@ -190,11 +195,24 @@ def audio_analysis(track_id):
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
+    playlist = Playlist.query.get_or_404(playlist_id)
+    form = AddTrackForm()
+    user = session['user_id']
+    curr_in_playlist = [track.id for track in playlist.tracks]
+    form.playlist.choices = [(p.id, p.playlist_name) for p in user.playlists if p.id not in curr_in_playlist]
 
     token = get_token()
     result = get_audio_analysis(track_id, token)
-    
-    return render_template('audio_analysis.html', result=result)
+
+    if form.validate_on_submit():
+        playlist_id = form.playlist.data
+        playlist_song = PlaylistSong(playlist_id=playlist_id, track_id=track_id)
+        song  = Song(result)
+        db.session.add_all([playlist_song, song])
+        db.session.commit()
+        return redirect(f'/users/{user.id}/playlists/{playlist.id}')
+    else:
+        return render_template('audio_analysis.html', result=result, form=form, playlist=playlist)
     
 
 
