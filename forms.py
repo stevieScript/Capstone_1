@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, TextAreaField, IntegerField, EmailField
+from wtforms import StringField,RadioField, PasswordField, SelectField
 from wtforms.validators import DataRequired, Email, Length
 
 
@@ -21,11 +21,10 @@ class LoginForm(FlaskForm):
 class SpotifySearchForm(FlaskForm):
     ''' Form for searching Spotify'''
 
-    song = StringField('Search song name')
-    artist = StringField('Search artist name')
-    album = StringField('Search album name')
+    search_term = StringField('Search')
 
-
+    search_type = SelectField('Search Type', choices=[('track', 'Track'), ('artist', 'Artist'), ('album', 'Album')])
+    
 
 
 

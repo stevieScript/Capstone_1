@@ -6,8 +6,9 @@ import dotenv
 
 dotenv.load_dotenv('.env')
 
+keys = ['C', 'C#/Db', 'D', 'D#/Eb', 'E', 'F', 'F#/Gb', 'G', 'G#/Ab', 'A', 'A#/Bb', 'B']
 
-
+mode = ['Minor', 'Major']
 
 client_id = os.getenv('CLIENT_ID')
 client_secret = os.getenv('CLIENT_SECRET')
@@ -42,8 +43,28 @@ def search_artist(artist_name, token):
         return None
     else:
         return json_result
+    
+def get_artist_id(artist_name, token):
+    url = f'https://api.spotify.com/v1/search?q={artist_name}&type=artist&limit=1'
+    headers = get_auth_header(token)
 
-    print(json_result)
+    result = get(url, headers=headers)
+    json_result = result.json()['artists']['items']
+    if len(json_result) == 0:
+        return None
+    else:
+        return json_result[0]['id']
+    
+def get_track_id(track_name, token):
+    url = f'https://api.spotify.com/v1/search?q={track_name}&type=track&limit=1'
+    headers = get_auth_header(token)
+
+    result = get(url, headers=headers)
+    json_result = result.json()['tracks']['items']
+    if len(json_result) == 0:
+        return None
+    else:
+        return json_result[0]['id']
 
 def get_songs(artist_id, token):
     url = f'https://api.spotify.com/v1/artists/{artist_id}/top-tracks?country=US'
@@ -52,6 +73,114 @@ def get_songs(artist_id, token):
     result = get(url, headers=headers)
     json_result = result.json()['tracks']
     return json_result
+
+def get_albums(artist_id, token):
+    url = f'https://api.spotify.com/v1/artists/{artist_id}/albums'
+    headers = get_auth_header(token)
+
+    result = get(url, headers=headers)
+    json_result = result.json()['items']
+    return json_result
+
+def get_album(album_id, token):
+    url = f'https://api.spotify.com/v1/albums/{album_id}'
+    headers = get_auth_header(token)
+
+    result = get(url, headers=headers)
+    json_result = result.json()
+    return json_result
+
+def get_album_tracks(album_id, token):
+    url = f'https://api.spotify.com/v1/albums/{album_id}/tracks'
+    headers = get_auth_header(token)
+
+    result = get(url, headers=headers)
+    json_result = result.json()['items']
+    return json_result
+
+def get_album_art(album_id, token):
+    url = f'https://api.spotify.com/v1/albums/{album_id}'
+    headers = get_auth_header(token)
+
+    result = get(url, headers=headers)
+    json_result = result.json()['images'][0]['url']
+    return json_result
+
+
+    
+def get_audio_analysis(track_id, token):
+    url = f'https://api.spotify.com/v1/audio-analysis/{track_id}'
+    headers = get_auth_header(token)
+
+    result = get(url, headers=headers)
+    data = result.json()['track']
+
+    analysis = {
+            'duration': round(data['duration'] / 60, 2),
+            'key': keys[data['key']],
+            'key_confidence': data['key_confidence'],
+            'mode': mode[data['mode']],
+            'mode_confidence': data['mode_confidence'],
+            'time_signature': data['time_signature'],
+            'time_signature_confidence': data['time_signature_confidence'],
+            'tempo': data['tempo'],
+            'tempo_confidence': data['tempo_confidence'],
+        }
+
+    
+    return analysis
+    
+
+def generic_search(search_type, search_term, token):
+    url = f'https://api.spotify.com/v1/search?q={search_term}&type={search_type}&limit=10'
+    headers = get_auth_header(token)
+
+    search_result = get(url, headers=headers)
+
+    result = []
+    
+    if search_type == 'track':
+        for item in search_result.json()['tracks']['items']:
+            result.append({
+                'name': item['name'],
+                'artist': item['artists'][0]['name'],
+                'album': item['album']['name'],
+                'id': item['id'],
+                'type': 'track',
+                'image': item['album']['images'][0]['url']
+                
+            })
+    elif search_type == 'artist':
+        for item in search_result.json()['artists']['items']:
+            result.append({
+                'name': item['name'],
+                'id': item['id'],
+                'type': 'artist',
+                'image': item['images'][0]['url']
+            })
+
+    elif search_type == 'album':
+        for item in search_result.json()['albums']['items']:
+            result.append({
+                'image': item['images'][0]['url'],
+                'name': item['name'],
+                'artist': item['artists'][0]['name'],
+                'id': item['id'],
+                'type': 'album'
+            })
+
+    return result
+
+    # return json_result
+
+def determine_search_type(search_type):
+    if search_type == 'track':
+        get_songs()
+        return 'track'
+    elif search_type == 'artist':
+        return 'artist'
+    elif search_type == 'album':
+        return 'album'
 
 # token = get_token()
 # res = search_artist('Metallica', token)

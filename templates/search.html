@@ -20,19 +20,10 @@
     </p>
     {% endfor %}
   
-    <button class="btn btn-primary" type="submit">Login</button>
+    <button class="btn btn-primary" type="submit">Search</button>
   
   </form>
 
-{% if songs %}
-    <h2>Results for {{ artist_name }}</h2>
-    <ul>
-        {% for song in songs %}
-            <li>
-                <p>{{song['name']}}</p>
-            </li>
-        {% endfor %}
-    </ul>
-{% endif %}
+
 
 {% endblock %}

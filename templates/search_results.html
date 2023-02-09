@@ -2,17 +2,50 @@
 
 {% block content %}
 
-<h1>HI</h1>
+<h1>Search results for</h1>
 
-{% if songs %}
-    <h2>Results for {{ artist_name }}</h2>
-    <ul>
-        {% for song in songs %}
-            <li>
-                <p>{{song['name']}}</p>
-            </li>
-        {% endfor %}
-    </ul>
+{% for item in result %}
+
+{% if item.type == 'track' %}
+<div class="card">
+    <div class="card-body">
+    {% if item.image != '' %}
+    <img src="{{item.image}}" alt="album art" class="img-thumbnail">
+    {% endif %}
+    <p>Track name: {{ item.name }}</p>
+    <p>Artist: {{ item.artist }}</p>
+    <p>Album: {{ item.album }}</p>
+    <a href="/audio_analysis/{{item.id}}" class="card-link">Get track analysis for {{item.name}}</a>
+</div>
+</div>
 {% endif %}
+
+{% if item.type == 'artist' %}
+    <div class="card">
+    <div class="card-body">
+    {% if item.image != '' %}
+    <img src="{{item.image}}" alt="album art" class="img-thumbnail">
+    {% endif %}
+    <p>Artist: {{ item.name }}</p>
+    <a href="/get_albums" class="card-link">Get more albums from {{item.name}}</a>
+    </div>
+    </div>
+{% endif %}
+
+{% if item.type == 'album' %}
+    <div class="card">
+    <div class="card-body">
+    <!-- add album image if it exists in item.album_art -->
+    {% if item.image != '' %}
+    <img src="{{item.image}}" alt="album art" class="img-thumbnail">
+    {% endif %}
+    <p>Album: {{ item.name }}</p>
+    <p>Artist: {{ item.artist }}</p>
+    <a href="/get_album_tracks" class="card-link d-block">See tracks from this album {{item.name}}</a>
+    </div>
+    </div>
+{% endif %}
+
+{% endfor %}
 
 {% endblock %}
