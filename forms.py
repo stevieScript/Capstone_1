@@ -34,6 +34,6 @@ class PlaylistForm(FlaskForm):
 class AddTrackForm(FlaskForm):
     ''' Form for adding a track to a playlist'''
 
-    playlist = SelectField('Playlist')
+    playlist = SelectField('Add song to playlist:')
 
 

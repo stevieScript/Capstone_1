@@ -3,6 +3,7 @@ import os
 import base64
 from requests import post, get
 import dotenv
+from models import db, connect_db, User, Song, Artist, ArtistSong, Playlist, PlaylistSong
 
 dotenv.load_dotenv('.env')
 
@@ -113,7 +114,7 @@ def get_track_info(track_id, token):
     json_result = result.json()
 
     track_info = {
-        'spoifty_track_id': json_result['id'],
+        'track_id': json_result['id'],
         'track_name': json_result['name'],
         'track_uri': json_result['uri'],
         'artist_name': json_result['artists'][0]['name'],
@@ -189,14 +190,13 @@ def generic_search(search_type, search_term, token):
 
     # return json_result
 
-def determine_search_type(search_type):
-    if search_type == 'track':
-        get_songs()
-        return 'track'
-    elif search_type == 'artist':
-        return 'artist'
-    elif search_type == 'album':
-        return 'album'
+# def add_to_playlist(track_id, playlist_id, user_id):
+    
+
+
+
+
+#     return result
 
 # token = get_token()
 # res = search_artist('Metallica', token)

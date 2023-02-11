@@ -29,7 +29,7 @@ CREATE TABLE "Playlist" (
 
 CREATE TABLE "Songs" (
     "id" INT NOT NULL,
-    "spotify_track_id" TEXT NOT NULL,
+    "track_id" TEXT NOT NULL,
     "track_name" TEXT NOT NULL,
     "track_uri" TEXT NOT NULL,
     "artist" TEXT NOT NULL,

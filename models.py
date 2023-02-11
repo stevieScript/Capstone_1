@@ -44,7 +44,7 @@ class User(db.Model):
 
     def __repr__(self):
         return f'<User {self.id} {self.username} {self.email}>'
-
+    
     @classmethod
     def register(cls, username, password, email):
         """Register user w/hashed password & return user."""
@@ -69,6 +69,36 @@ class User(db.Model):
             return u
         else:
             return False
+        
+    @classmethod
+    # method to add song to song table, if it's not already there, and playlist_songs table. Or, add song to playlist_songs table if it's already in the song table
+    def add_song(cls, song, playlist_id):
+        """Add song to playlist."""
+
+        # check if song is already in songs table
+        song = Song.query.filter_by(song_id=song['id']).first()
+        # if song is not in songs table, add it
+        if not song:
+            song = Song.create_song(song)
+            db.session.add(song)
+            db.session.commit()
+        # add song to playlist_songs table
+        playlist_song = PlaylistSong(playlist_id=playlist_id, song_id=song.id) 
+        db.session.add(playlist_song)
+        db.session.commit()
+        return song
+    
+    @classmethod
+    # method to remove song from playlist_songs table
+    def remove_song(cls, song_id, playlist_id):
+        """Remove song from playlist."""
+
+        # remove song from playlist_songs table
+        playlist_song = PlaylistSong.query.filter_by(playlist_id=playlist_id, song_id=song_id).first()
+        db.session.delete(playlist_song)
+        db.session.commit()
+        return playlist_song
+
 
 
 class Playlist(db.Model):
@@ -98,11 +128,7 @@ class Playlist(db.Model):
         nullable=False
     )
 
-    
-
-    # user = db.relationship('User', backref='playlists')
-
-    songs = db.relationship('Song', secondary='playlist_songs', backref='playlist_songs')
+    songs = db.relationship('Song', secondary='playlist_songs', backref='songs')
 
     def __repr__(self):
         return f'<Playlist {self.id} {self.name} {self.description}>'
@@ -112,6 +138,8 @@ class Playlist(db.Model):
         """Create playlist and return playlist."""
 
         return cls(name=name, description=description, user_id=user_id)
+    
+    
 
 
 class Song(db.Model):
@@ -125,7 +153,7 @@ class Song(db.Model):
         autoincrement=True,
     )
 
-    spotify_track_id = db.Column(
+    track_id = db.Column(
         db.Text,
         nullable=False,
         unique=True,
@@ -152,12 +180,32 @@ class Song(db.Model):
         nullable=False,
     )
 
+    album = db.Column(
+        db.Text,
+        nullable=False,
+    )
+
+    album_art = db.Column(
+        db.Text,
+        nullable=False,
+    )
+
     tempo = db.Column(
         db.Float,
         nullable=False,
     )
 
+    tempo_confidence = db.Column(
+        db.Integer,
+        nullable=False,
+    )
+
     time_signature = db.Column(
+        db.Integer,
+        nullable=False,
+    )
+
+    time_signature_confidence = db.Column(
         db.Integer,
         nullable=False,
     )
@@ -167,8 +215,18 @@ class Song(db.Model):
         nullable=False,
     )
 
+    key_confidence = db.Column(
+        db.Integer,
+        nullable=False,
+    )
+
     mode = db.Column(
         db.Text,
+        nullable=False,
+    )
+
+    mode_confidence = db.Column(
+        db.Integer,
         nullable=False,
     )
 
@@ -187,10 +245,28 @@ class Song(db.Model):
         return f'<Song {self.id} {self.track_name} {self.artist_name}>'
     
     @classmethod
-    def create_song(cls, spotify_track_id, track_name, track_uri, artist_name, tempo, time_signature, key, mode, duration_ms, loudness):
+    # methods that accepts a dictionary of song attributes and creates a song instance
+    def create_song(cls, song_dict):
         """Create song and return song."""
 
-        return cls(spotify_track_id=spotify_track_id, track_name=track_name, track_uri=track_uri, artist_name=artist_name, tempo=tempo, time_signature=time_signature, key=key, mode=mode, duration_ms=duration_ms, loudness=loudness)
+        return cls(track_id=song_dict['track_id'], track_name=song_dict['track_name'], track_uri=song_dict['track_uri'], artist_name=song_dict['artist_name'], artist_id=song_dict['artist_id'], tempo=song_dict['tempo'], album=song_dict['album'], tempo_confidence=song_dict['tempo_confidence'],time_signature=song_dict['time_signature'], time_signature_confidence=song_dict['time_signature_confidence'], key=song_dict['key'], key_confidence=song_dict['key_confidence'], mode=song_dict['mode'], mode_confidence=song_dict['mode_confidence'], duration=song_dict['duration'], loudness=song_dict['loudness'], album_art=song_dict['album_art'])
+
+    @classmethod
+    # methods that will query the db to see if the song already exists, and if it does, return the song instance. If it doesn't, create a song instance and return it
+    def get_song(cls, song_id):
+        """Get song from database."""
+
+        song = Song.query.filter_by(track_id=song_id).first()
+
+        if song:
+            return song
+        else:
+            return None
+
+    # def create_song(cls, track_id, track_name, track_uri, artist_name, tempo, time_signature, key, mode, duration_ms, loudness):
+    #     """Create song and return song."""
+
+    #     return cls(track_id=track_id, track_name=track_name, track_uri=track_uri, artist_name=artist_name, tempo=tempo, time_signature=time_signature, key=key, mode=mode, duration_ms=duration_ms, loudness=loudness)
     
 
 
@@ -218,11 +294,17 @@ class PlaylistSong(db.Model):
         nullable=False
     )
 
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey('users.id'),
+        nullable=False
+    )
+
     playlist = db.relationship('Playlist', backref='playlist_songs')
-    # song = db.relationship('Song', backref='playlist_songs')
+    song = db.relationship('Song', backref='playlist_songs')
 
     @classmethod
-    def create_playlist_song(cls, playlist_id, song_id):
+    def create_playlist_song(cls, playlist_id, song_id, user_id):
         """Create playlist_song and return playlist_song."""
 
         return cls(playlist_id=playlist_id, song_id=song_id)
