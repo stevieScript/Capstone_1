@@ -2,21 +2,20 @@
 
 {% block content %}
 
-{% if playlist %}
-<h1>Playlist: {{playlist.name}}</h1>
-{% for track in playlist.tracks %}
+{% if user.playlists  %}
+<h1>Your playlists: </h1>
+{% for playlist in playlists %}
 
-<div class="card">
+<div class="card mb-3">
     <div class="card-body">
-        <h5 class="card-title">{{track.name}}</h5>
-        <h6 class="card-subtitle mb-2 text-muted">{{track.artist}}</h6>
-        <p class="card-text">{{track.album}}</p>
-        <a href="/audio_analysis/{{track.id}}" class="card-link">Audio Analysis</a>
-        <a href="/audio_features/{{track.id}}" class="card-link">Audio Features</a>
+        <h5 class="card-title"><a href="/user/{{user.id}}/playlists/{{playlist.id}}">{{playlist.name}}</a></h5>
+        <h6 class="card-subtitle mb-2 text-muted">{{playlist.decription}}</h6>
     </div>
 </div>
 {% endfor %}
-{% else %}
+{% endif %}
+<div class="card mb-3">
+  <div class="card-body">
 <form action="/user/{{user.id}}/playlists" method="POST">
 {{ form.hidden_tag() }}
   
@@ -33,8 +32,8 @@
     {% endfor %}
     <button type="submit" class="btn btn-primary">Create Playlist</button>
 </form>
-{% endif %}
-
+</div>
+</div>
 
 
 

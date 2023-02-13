@@ -1,0 +1,34 @@
+{% extends 'base.html'  %}
+
+{% block content %}
+
+<h1>Analysis for: <br> {{song.track_name}} </h1>
+
+<div class="card">
+    <img class="img-thumbnail img-fluid" src="{{song.album_art}}" alt="album art">
+    <div class="card-body text-center">
+    <ul class="list-unstyled">
+        <li class="card-text">Artist: {{song.artist_name}}</li>
+        <li class="card-text">Album: {{song.album}}</li>
+        <li class="card-text" >Duration in minutes: {{song.duration}}</li>
+        <li class="card-text" >Key signature: {{song.key}}</li>
+        <li class="card-text" >Key signature confidence: {{song.key_confidence}}%</li>
+        <li class="card-text" >Mode: {{song.mode}}</li>
+        <li class="card-text" >Mode confidence: {{song.mode_confidence}}%</li>
+        <li class="card-text" >Time signature: {{song.time_signature}}/4</li>
+        <li class="card-text" >Time signature confidence: {{song.time_signature_confidence}}%</li>
+        <li class="card-text">Tempo/BPM: {{song.tempo}}</li>
+        <li class="card-text">Tempo confidence: {{song.tempo_confidence}}%</li>
+        <li class="card-text">Loudness: {{song.loudness}}</li>
+    </ul>
+    <button href="javascript:history.back()" class="btn btn-primary">Go back</button>
+    <form action="/user/{{user.id}}/playlists/{{playlist.id}}/{{song.id}}/delete" method="POST">
+        <button type="submit" class="btn btn-primary">Remove song!</button>
+    </form>
+</div>
+
+
+
+
+
+{% endblock %}

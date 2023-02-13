@@ -164,13 +164,26 @@ def show_playlists(user_id):
         return redirect("/")
     form = PlaylistForm()
     user = User.query.get_or_404(user_id)
+    playlists = Playlist.query.filter(Playlist.user_id == user_id).all()
     if form.validate_on_submit():
         playlist = Playlist(name=form.playlist_name.data, user_id=user_id)
         db.session.add(playlist)
         db.session.commit()
         return redirect(f'/user/{user_id}/playlists')
 
-    return render_template('playlists.html', user=user, form=form)
+    return render_template('playlists.html', user=user, form=form, playlists=playlists)
+
+@app.route('/user/<int:user_id>/playlists/<int:playlist_id>', methods=["GET", "POST"])
+def show_playlist(user_id, playlist_id):
+    """Show playlist."""
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    form = PlaylistForm()
+    user = User.query.get_or_404(user_id)
+    playlist = Playlist.query.get_or_404(playlist_id)
+    songs = PlaylistSong.query.filter(PlaylistSong.playlist_id == playlist_id).all()
+    return render_template('playlist.html', user=user, form=form, playlist=playlist, songs=songs)
 
 @app.route('/user/<int:user_id>/search', methods=["GET", "POST"])
 def search(user_id):
@@ -219,7 +232,7 @@ def audio_analysis(user_id, track_id):
         db.session.commit()
 
 
-        return render_template('playlist.html')
+        return redirect(f'/user/{user_id}/playlists')
     else:
         return render_template('audio_analysis.html', result=result, form=form, user=user, track_id=track_id)
 
@@ -235,6 +248,44 @@ def add_track(track_data, user_id):
     
     db.session.add(song)
     db.session.commit()
+
+    return redirect(f'/user/{user_id}/playlists')
+
+@app.route('/user/<int:user_id>/playlists/<int:playlist_id>/<track_id>', methods=["GET", "POST"])
+def track_details(user_id, playlist_id, track_id):
+    """Show track details."""
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    
+    user = User.query.get_or_404(user_id)
+    playlist = Playlist.query.get_or_404(playlist_id)
+    song = Song.query.filter(Song.track_id == track_id).first()
+    return render_template('song_details.html', user=user, playlist=playlist, song=song)
+
+@app.route('/user/<int:user_id>/playlists/<int:playlist_id>/delete', methods=["POST"])
+def delete_playlist(user_id, playlist_id):
+    """Delete playlist."""
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    playlist = Playlist.query.get_or_404(playlist_id)
+    db.session.delete(playlist)
+    db.session.commit()
+    flash("Playlist deleted.", "success")
+    return redirect(f'/user/{user_id}/playlists')
+
+@app.route('/user/<int:user_id>/playlists/<int:playlist_id>/<int:song_id>/delete', methods=["POST"])
+def delete_song(user_id, playlist_id, song_id):
+    """Delete song from playlist."""
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    playlist_song = PlaylistSong.query.filter(PlaylistSong.playlist_id == playlist_id, PlaylistSong.song_id == song_id).first()
+    db.session.delete(playlist_song)
+    db.session.commit()
+    flash("Song deleted from playlist.", "success")
+    return redirect(f'/user/{user_id}/playlists/{playlist_id}')
 
     
     
