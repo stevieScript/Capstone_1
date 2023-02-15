@@ -15,9 +15,10 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///maestro'
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
-app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 app.config['SECRET_KEY'] = 'maestro'
-toolbar = DebugToolbarExtension(app)
+app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+
+debug = DebugToolbarExtension(app)
 
 connect_db(app)
 
@@ -201,6 +202,35 @@ def search(user_id):
         return render_template('search_results.html', result=result, user=user)
     else:
         return render_template('search.html', form=form)
+    
+@app.route('/get_albums/<int:user_id>/<artist_id>', methods=["GET", "POST"])
+def get_artist_albums(artist_id, user_id):
+    """Get albums from Spotify."""
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    user = User.query.get_or_404(user_id)
+    token = get_token()
+    result = get_albums(artist_id,token)
+    # print(result)
+    
+    
+
+
+    return render_template('albums.html', result=result, user=user)
+
+@app.route('/get_tracks/<int:user_id>/<album_id>', methods=["GET", "POST"])
+def get_tracks(album_id, user_id):
+    """Get tracks from Spotify."""
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    
+    token = get_token()
+    result = get_album_tracks(album_id,token)
+    # print(result)
+    user = User.query.get_or_404(user_id)
+    return render_template('track_listing.html', result=result, user=user)
     
 @app.route('/audio_analysis/<int:user_id>/<track_id>', methods=["GET", "POST"])
 def audio_analysis(user_id, track_id):

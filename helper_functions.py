@@ -4,6 +4,7 @@ import base64
 from requests import post, get
 import dotenv
 from models import db, connect_db, User, Song, Artist, ArtistSong, Playlist, PlaylistSong
+import pdb
 
 dotenv.load_dotenv('.env')
 
@@ -81,7 +82,21 @@ def get_albums(artist_id, token):
 
     result = get(url, headers=headers)
     json_result = result.json()['items']
-    return json_result
+    
+    album = []
+    for item in json_result:
+            album.append({
+            'album_id': item['id'],
+            'album_name': item['name'],
+            'album_art': item['images'][0]['url'],
+            'artist_name': item['artists'][0]['name'],
+            'artist_id': item['artists'][0]['id'],
+            'release_date': item['release_date'],
+            'total_tracks': item['total_tracks']
+        })
+
+    # print(json_result)
+    return album
 
 def get_album(album_id, token):
     url = f'https://api.spotify.com/v1/albums/{album_id}'
@@ -89,7 +104,18 @@ def get_album(album_id, token):
 
     result = get(url, headers=headers)
     json_result = result.json()
-    return json_result
+
+    album = {
+        'album_id': json_result['id'],
+        'album_name': json_result['name'],
+        'album_art': json_result['images'][0]['url'],
+        'artist_name': json_result['artists'][0]['name'],
+        'artist_id': json_result['artists'][0]['id'],
+        'release_date': json_result['release_date'],
+        'total_tracks': json_result['total_tracks']
+    }
+
+    return album
 
 def get_album_tracks(album_id, token):
     url = f'https://api.spotify.com/v1/albums/{album_id}/tracks'
@@ -97,7 +123,25 @@ def get_album_tracks(album_id, token):
 
     result = get(url, headers=headers)
     json_result = result.json()['items']
-    return json_result
+    print(json_result)
+    art = get_album_art(album_id, token)
+    tracks = []
+    for item in json_result:
+        tracks.append({
+            'track_id': item['id'],
+            'track_name': item['name'],
+            'track_uri': item['uri'],
+            'artist_name': item['artists'][0]['name'],
+            'artist_id': item['artists'][0]['id'],
+            'duration': round(item['duration_ms'] / 60000, 2),
+            'explicit': item['explicit'],
+            'track_number': item['track_number'],
+        })
+
+        
+        
+
+    return tracks
 
 def get_album_art(album_id, token):
     url = f'https://api.spotify.com/v1/albums/{album_id}'
@@ -158,6 +202,8 @@ def generic_search(search_type, search_term, token):
     
     if search_type == 'track':
         for item in search_result.json()['tracks']['items']:
+            if len(item['album']['images']) == 0:
+                item['album']['images'].append({'url': 'https://i.scdn.co/image/ab67616d0000b273b2a3b2a0d2e2c8e1b9a9e0f7'})
             result.append({
                 'name': item['name'],
                 'artist': item['artists'][0]['name'],
@@ -165,25 +211,30 @@ def generic_search(search_type, search_term, token):
                 'id': item['id'],
                 'type': 'track',
                 'image': item['album']['images'][0]['url']
-                
             })
     elif search_type == 'artist':
         for item in search_result.json()['artists']['items']:
+            if len(item['images']) == 0:
+                item['images'].append({'url': 'https://i.scdn.co/image/ab67616d0000b273b2a3b2a0d2e2c8e1b9a9e0f7'})
             result.append({
                 'name': item['name'],
                 'id': item['id'],
+                'image': item['images'][0]['url'],
                 'type': 'artist',
-                'image': item['images'][0]['url']
             })
+            
+            
 
     elif search_type == 'album':
         for item in search_result.json()['albums']['items']:
+            if len(item['images']) == 0:
+                item['images'].append({'url': 'https://i.scdn.co/image/ab67616d0000b273b2a3b2a0d2e2c8e1b9a9e0f7'})
             result.append({
                 'image': item['images'][0]['url'],
                 'name': item['name'],
                 'artist': item['artists'][0]['name'],
                 'id': item['id'],
-                'type': 'album'
+                'type': 'album',
             })
 
     return result

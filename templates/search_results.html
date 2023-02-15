@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<h1>Search results for</h1>
+<h1>Search results for {{result[0]['name']}}</h1>
 
 {% for item in result %}
 
@@ -23,11 +23,11 @@
 {% if item.type == 'artist' %}
     <div class="card">
     <div class="card-body">
-    {% if item.image != '' %}
+    {% if item.image %}
     <img src="{{item.image}}" alt="album art" class="img-thumbnail">
     {% endif %}
     <p>Artist: {{ item.name }}</p>
-    <a href="/get_albums" class="card-link">Get more albums from {{item.name}}</a>
+    <a href="/get_albums/{{user.id}}/{{item.id}}" class="card-link">Get more albums from {{item.name}}</a>
     </div>
     </div>
 {% endif %}
@@ -41,7 +41,7 @@
     {% endif %}
     <p>Album: {{ item.name }}</p>
     <p>Artist: {{ item.artist }}</p>
-    <a href="/get_album_tracks" class="card-link d-block">See tracks from this album {{item.name}}</a>
+    <a href="/get_tracks/{{user.id}}/{{item.id}}" class="card-link d-block">See tracks from this album {{item.name}}</a>
     </div>
     </div>
 {% endif %}

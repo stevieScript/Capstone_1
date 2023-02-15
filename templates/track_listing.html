@@ -1,0 +1,26 @@
+{% extends 'base.html'  %}
+
+{% block content %}
+
+<h1>Track listing for </h1>
+
+{% for item in result %}
+
+<div class="card">
+    <div class="card-body">
+    <!-- add album image if it exists in item.album_art -->
+    {% if item.image  %}
+    <img src="{{item.image}}" alt="album art" class="img-thumbnail">
+    {% endif %}
+    <p class="lead">Track Name: {{ item.track_name }}</p>
+    <p>Track Number: {{ item.track_number }}</p>
+    <p>Duration: {{ item.duration }}</p>
+    <p>Explicit: {{ item.explicit }}</p>
+    <a href="/audio_analysis/{{user.id}}/{{item.track_id}}" class="card-link d-block">Get audio analysis</a>
+</div>
+</div>
+
+{% endfor %}
+
+{% endblock %}
+

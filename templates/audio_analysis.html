@@ -5,7 +5,7 @@
 <h1>Analysis for: <br> {{result.track_name}} </h1>
 
 <div class="card">
-    <img class="img-thumbnail img-fluid" src="{{result.album_art}}" alt="album art">
+    <img class="align-self-center img-thumbnail img-fluid" src="{{result.album_art}}" alt="album art" height="25rem" width="25rem">
     <div class="card-body text-center">
     <ul class="list-unstyled">
         <li class="card-text">Artist: {{result.artist_name}}</li>
@@ -21,7 +21,8 @@
         <li class="card-text">Tempo confidence: {{result.tempo_confidence}}%</li>
         <li class="card-text">Loudness: {{result.loudness}}</li>
     </ul>
-    <button href="javascript:history.back()" class="primary d-block">Go back</button>
+    <form >
+    <button type="submit" href="javascript:history.back()" class="btn btn-primary mb-3">Go back</button></form>
     <form action="/audio_analysis/{{g.user.id}}/{{track_id}}" method="POST">
         {{ form.hidden_tag() }}
   
@@ -36,7 +37,7 @@
             {% endfor %}
         </p>
         {% endfor %}
-        <button type="submit">Add song!</button>
+        <button type="submit" class="btn btn-primary">Add song!</button>
     </form>
 </div>
 

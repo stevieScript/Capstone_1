@@ -379,10 +379,10 @@ class ArtistSong(db.Model):
         return cls(artist_id=artist_id, song_id=song_id)
 
 
-def connect_to_db(app):
-    """Connect the database to our Flask app."""
-    db.app = app
-    db.init_app(app)
+# def connect_to_db(app):
+#     """Connect the database to our Flask app."""
+#     db.app = app
+#     db.init_app(app)
 
    
 
