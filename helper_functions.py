@@ -34,46 +34,6 @@ def get_token():
 def get_auth_header(token):
     return {'Authorization' : f'Bearer {token}'}
 
-def search_artist(artist_name, token):
-    url = f'https://api.spotify.com/v1/search?q={artist_name}&type=artist&limit=1'
-    headers = get_auth_header(token)
-
-    result = get(url, headers=headers)
-    json_result = result.json()['artists']['items']
-    if len(json_result) == 0:
-        return None
-    else:
-        return json_result
-    
-def get_artist_id(artist_name, token):
-    url = f'https://api.spotify.com/v1/search?q={artist_name}&type=artist&limit=1'
-    headers = get_auth_header(token)
-
-    result = get(url, headers=headers)
-    json_result = result.json()['artists']['items']
-    if len(json_result) == 0:
-        return None
-    else:
-        return json_result[0]['id']
-    
-def get_track_id(track_name, token):
-    url = f'https://api.spotify.com/v1/search?q={track_name}&type=track&limit=1'
-    headers = get_auth_header(token)
-
-    result = get(url, headers=headers)
-    json_result = result.json()['tracks']['items']
-    if len(json_result) == 0:
-        return None
-    else:
-        return json_result[0]['id']
-
-def get_songs(artist_id, token):
-    url = f'https://api.spotify.com/v1/artists/{artist_id}/top-tracks?country=US'
-    headers = get_auth_header(token)
-
-    result = get(url, headers=headers)
-    json_result = result.json()['tracks']
-    return json_result
 
 def get_albums(artist_id, token):
     url = f'https://api.spotify.com/v1/artists/{artist_id}/albums'
@@ -94,7 +54,6 @@ def get_albums(artist_id, token):
             'total_tracks': item['total_tracks']
         })
 
-    # print(json_result)
     return album
 
 def get_album(album_id, token):
@@ -122,8 +81,7 @@ def get_album_tracks(album_id, token):
 
     result = get(url, headers=headers)
     json_result = result.json()['items']
-    print(json_result)
-    art = get_album_art(album_id, token)
+    
     tracks = []
     for item in json_result:
         tracks.append({
@@ -136,9 +94,6 @@ def get_album_tracks(album_id, token):
             'explicit': item['explicit'],
             'track_number': item['track_number'],
         })
-
-        
-        
 
     return tracks
 
@@ -238,23 +193,3 @@ def generic_search(search_type, search_term, token):
 
     return result
 
-    # return json_result
-
-# def add_to_playlist(track_id, playlist_id, user_id):
-    
-
-
-
-
-#     return result
-
-# token = get_token()
-# res = search_artist('Metallica', token)
-# artist_id = res[0]['id']
-# songs = get_songs(artist_id, token)
-
-# for song in songs:
-#     print(song['name'])
-
-# print(artist_id)
-# print(res)

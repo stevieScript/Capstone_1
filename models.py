@@ -34,11 +34,6 @@ class User(db.Model):
         nullable=False,
         unique=True,
     )
-
-    # user_img = db.Column(
-    #     db.Text
-    #     # default='https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png'
-    # )
     
     playlists = db.relationship('Playlist', backref='user')
 
@@ -302,74 +297,6 @@ class PlaylistSong(db.Model):
 
         return cls(playlist_id=playlist_id, song_id=song_id)
     
-
-# class Artist(db.Model):
-#     """Artist in the system."""
-
-#     __tablename__ = "artists"
-
-#     id = db.Column(
-#         db.Integer,
-#         primary_key=True,
-#         autoincrement=True,
-#     )
-
-#     name = db.Column(
-#         db.Text,
-#         nullable=False,
-#         unique=True,
-#     )
-
-#     spotify_artist_id = db.Column(
-#         db.Text,
-#         nullable=False,
-#         unique=True,
-#     )
-
-#     def __repr__(self):
-#         return f'<Artist {self.id} {self.name}>'
-
-#     @classmethod
-#     def create_artist(cls, name, spotify_artist_id):
-#         """Create artist and return artist."""
-
-#         return cls(name=name, spotify_artist_id=spotify_artist_id)
-    
-
-# class ArtistSong(db.Model):
-#     """ArtistSong in the system."""
-
-#     __tablename__ = "artist_songs"
-
-#     id = db.Column(
-#         db.Integer,
-#         primary_key=True,
-#         autoincrement=True,
-#     )
-
-#     artist_id = db.Column(
-#         db.Integer,
-#         db.ForeignKey('artists.id'),
-#         nullable=False
-#     )
-
-#     song_id = db.Column(
-#         db.Integer,
-#         db.ForeignKey('songs.id'),
-#         nullable=False
-#     )
-
-#     artist = db.relationship('Artist', backref='artist_songs')
-#     # song = db.relationship('Song', backref='artist_songs')
-
-#     def __repr__(self):
-#         return f'<ArtistSong {self.id} {self.artist_id} {self.song_id}>'
-
-#     @classmethod
-#     def create_artist_song(cls, artist_id, song_id):
-#         """Create artist_song and return artist_song."""
-
-#         return cls(artist_id=artist_id, song_id=song_id)
 
 
 

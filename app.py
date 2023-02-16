@@ -22,7 +22,7 @@ debug = DebugToolbarExtension(app)
 
 connect_db(app)
 
-
+# User routes
 @app.before_request
 def add_user_to_g():
     """If we're logged in, add curr user to Flask global."""
@@ -92,7 +92,7 @@ def login():
 
         flash("Invalid credentials.", 'danger')
 
-    return render_template('login.html', form=form)
+    return render_template('/user/login.html', form=form)
 
 @app.route('/logout')
 def logout():
@@ -115,7 +115,7 @@ def user_profile(user_id):
     form = PlaylistForm()
     playlists = Playlist.query.filter(Playlist.user_id == user_id).all()
 
-    return render_template('user.html', user=user, form=form, playlists=playlists)
+    return render_template('/user/user.html', user=user, form=form, playlists=playlists)
 
 
 @app.route('/users/<int:user_id>/delete', methods=["POST"])
@@ -152,9 +152,9 @@ def edit_user(user_id):
         return redirect(f"/user/{user.id}")
 
     else:
-        return render_template('edit_user.html', form=form, user=user)
+        return render_template('/user/edit_user.html', form=form, user=user)
     
-
+# routes for music info
 
 @app.route('/user/<int:user_id>/playlists', methods=["GET", "POST"])
 def show_playlists(user_id):
@@ -172,7 +172,7 @@ def show_playlists(user_id):
         db.session.commit()
         return redirect(f'/user/{user_id}/playlists')
 
-    return render_template('playlists.html', user=user, form=form, playlists=playlists)
+    return render_template('/music/playlists.html', user=user, form=form, playlists=playlists)
 
 @app.route('/user/<int:user_id>/playlists/<int:playlist_id>', methods=["GET", "POST"])
 def show_playlist(user_id, playlist_id):
@@ -184,7 +184,7 @@ def show_playlist(user_id, playlist_id):
     user = User.query.get_or_404(user_id)
     playlist = Playlist.query.get_or_404(playlist_id)
     songs = PlaylistSong.query.filter(PlaylistSong.playlist_id == playlist_id).all()
-    return render_template('playlist.html', user=user, form=form, playlist=playlist, songs=songs)
+    return render_template('/music/playlist.html', user=user, form=form, playlist=playlist, songs=songs)
 
 @app.route('/user/<int:user_id>/search', methods=["GET", "POST"])
 def search(user_id):
@@ -199,9 +199,9 @@ def search(user_id):
     if form.validate_on_submit():
         token = get_token()
         result = generic_search(form.search_type.data, form.search_term.data, token)
-        return render_template('search_results.html', result=result, user=user)
+        return render_template('/music/search_results.html', result=result, user=user)
     else:
-        return render_template('search.html', form=form)
+        return render_template('/music/search.html', form=form)
     
 @app.route('/get_albums/<int:user_id>/<artist_id>', methods=["GET", "POST"])
 def get_artist_albums(artist_id, user_id):
@@ -213,7 +213,7 @@ def get_artist_albums(artist_id, user_id):
     token = get_token()
     result = get_albums(artist_id,token)
     
-    return render_template('albums.html', result=result, user=user)
+    return render_template('/music/albums.html', result=result, user=user)
 
 @app.route('/get_tracks/<int:user_id>/<album_id>', methods=["GET", "POST"])
 def get_tracks(album_id, user_id):
@@ -226,7 +226,7 @@ def get_tracks(album_id, user_id):
     result = get_album_tracks(album_id,token)
     
     user = User.query.get_or_404(user_id)
-    return render_template('track_listing.html', result=result, user=user)
+    return render_template('/music/track_listing.html', result=result, user=user)
     
 @app.route('/audio_analysis/<int:user_id>/<track_id>', methods=["GET", "POST"])
 def audio_analysis(user_id, track_id):
@@ -259,7 +259,7 @@ def audio_analysis(user_id, track_id):
         flash("Song added to playlist", 'success')
         return redirect(f'/user/{user_id}/playlists/{playlist_id}')
     else:
-        return render_template('audio_analysis.html', result=result, form=form, user=user, track_id=track_id)
+        return render_template('/music/audio_analysis.html', result=result, form=form, user=user, track_id=track_id)
 
 @app.route('/user/<int:user_id>/add_track/<track_id>', methods=["GET", "POST"])
 def add_track(track_data, user_id):
@@ -286,7 +286,7 @@ def track_details(user_id, playlist_id, track_id):
     user = User.query.get_or_404(user_id)
     playlist = Playlist.query.get_or_404(playlist_id)
     song = Song.query.filter(Song.track_id == track_id).first()
-    return render_template('song_details.html', user=user, playlist=playlist, song=song)
+    return render_template('/music/song_details.html', user=user, playlist=playlist, song=song)
 
 @app.route('/user/<int:user_id>/playlists/<int:playlist_id>/delete', methods=["POST"])
 def delete_playlist(user_id, playlist_id):
@@ -316,12 +316,12 @@ def delete_song(user_id, playlist_id, song_id):
     
 
 
-# @app.after_request
-# def add_header(req):
-#     """Add non-caching headers on every request."""
+@app.after_request
+def add_header(req):
+    """Add non-caching headers on every request."""
 
-#     req.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-#     req.headers["Pragma"] = "no-cache"
-#     req.headers["Expires"] = "0"
-#     req.headers['Cache-Control'] = 'public, max-age=0'
-#     return req
+    req.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    req.headers["Pragma"] = "no-cache"
+    req.headers["Expires"] = "0"
+    req.headers['Cache-Control'] = 'public, max-age=0'
+    return req

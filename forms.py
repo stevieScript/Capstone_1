@@ -21,7 +21,7 @@ class LoginForm(FlaskForm):
 class SpotifySearchForm(FlaskForm):
     ''' Form for searching Spotify'''
 
-    search_term = StringField('Search')
+    search_term = StringField('Search', validators=[DataRequired()])
 
     search_type = SelectField('Search Type', choices=[('track', 'Track'), ('artist', 'Artist'), ('album', 'Album')])
 
