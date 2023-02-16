@@ -8,8 +8,8 @@ class SignUpForm(FlaskForm):
 
     username = StringField('Username', validators=[DataRequired()])
     email = StringField('E-mail', validators=[DataRequired(), Email()])
-    password = PasswordField('Password', validators=[Length(min=6)])
-    # user_img = StringField('Image URL (Optional) ')
+    password = PasswordField('Password', validators=[DataRequired(),  Length(min=6)])
+    
 
 
 class LoginForm(FlaskForm):
@@ -36,4 +36,10 @@ class AddTrackForm(FlaskForm):
 
     playlist = SelectField('Add song to playlist:')
 
+class EditUserForm(FlaskForm):
+    ''' Form for editing a user's profile'''
 
+    username = StringField('Username', validators=[DataRequired()])
+    email = StringField('E-mail', validators=[DataRequired(), Email()])
+    
+    

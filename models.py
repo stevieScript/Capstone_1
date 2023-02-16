@@ -69,6 +69,7 @@ class User(db.Model):
             return u
         else:
             return False
+
         
     @classmethod
     # method to add song to song table, if it's not already there, and playlist_songs table. Or, add song to playlist_songs table if it's already in the song table
@@ -115,7 +116,6 @@ class Playlist(db.Model):
     name = db.Column(
         db.Text,
         nullable=False,
-        unique=True,
     )
 
     description = db.Column(
@@ -263,13 +263,6 @@ class Song(db.Model):
         else:
             return None
 
-    # def create_song(cls, track_id, track_name, track_uri, artist_name, tempo, time_signature, key, mode, duration_ms, loudness):
-    #     """Create song and return song."""
-
-    #     return cls(track_id=track_id, track_name=track_name, track_uri=track_uri, artist_name=artist_name, tempo=tempo, time_signature=time_signature, key=key, mode=mode, duration_ms=duration_ms, loudness=loudness)
-    
-
-
 
 class PlaylistSong(db.Model):
     """PlaylistSong in the system."""
@@ -310,96 +303,73 @@ class PlaylistSong(db.Model):
         return cls(playlist_id=playlist_id, song_id=song_id)
     
 
-class Artist(db.Model):
-    """Artist in the system."""
+# class Artist(db.Model):
+#     """Artist in the system."""
 
-    __tablename__ = "artists"
+#     __tablename__ = "artists"
 
-    id = db.Column(
-        db.Integer,
-        primary_key=True,
-        autoincrement=True,
-    )
+#     id = db.Column(
+#         db.Integer,
+#         primary_key=True,
+#         autoincrement=True,
+#     )
 
-    name = db.Column(
-        db.Text,
-        nullable=False,
-        unique=True,
-    )
+#     name = db.Column(
+#         db.Text,
+#         nullable=False,
+#         unique=True,
+#     )
 
-    spotify_artist_id = db.Column(
-        db.Text,
-        nullable=False,
-        unique=True,
-    )
+#     spotify_artist_id = db.Column(
+#         db.Text,
+#         nullable=False,
+#         unique=True,
+#     )
 
-    def __repr__(self):
-        return f'<Artist {self.id} {self.name}>'
+#     def __repr__(self):
+#         return f'<Artist {self.id} {self.name}>'
 
-    @classmethod
-    def create_artist(cls, name, spotify_artist_id):
-        """Create artist and return artist."""
+#     @classmethod
+#     def create_artist(cls, name, spotify_artist_id):
+#         """Create artist and return artist."""
 
-        return cls(name=name, spotify_artist_id=spotify_artist_id)
+#         return cls(name=name, spotify_artist_id=spotify_artist_id)
     
 
-class ArtistSong(db.Model):
-    """ArtistSong in the system."""
+# class ArtistSong(db.Model):
+#     """ArtistSong in the system."""
 
-    __tablename__ = "artist_songs"
+#     __tablename__ = "artist_songs"
 
-    id = db.Column(
-        db.Integer,
-        primary_key=True,
-        autoincrement=True,
-    )
+#     id = db.Column(
+#         db.Integer,
+#         primary_key=True,
+#         autoincrement=True,
+#     )
 
-    artist_id = db.Column(
-        db.Integer,
-        db.ForeignKey('artists.id'),
-        nullable=False
-    )
+#     artist_id = db.Column(
+#         db.Integer,
+#         db.ForeignKey('artists.id'),
+#         nullable=False
+#     )
 
-    song_id = db.Column(
-        db.Integer,
-        db.ForeignKey('songs.id'),
-        nullable=False
-    )
+#     song_id = db.Column(
+#         db.Integer,
+#         db.ForeignKey('songs.id'),
+#         nullable=False
+#     )
 
-    artist = db.relationship('Artist', backref='artist_songs')
-    # song = db.relationship('Song', backref='artist_songs')
+#     artist = db.relationship('Artist', backref='artist_songs')
+#     # song = db.relationship('Song', backref='artist_songs')
 
-    def __repr__(self):
-        return f'<ArtistSong {self.id} {self.artist_id} {self.song_id}>'
+#     def __repr__(self):
+#         return f'<ArtistSong {self.id} {self.artist_id} {self.song_id}>'
 
-    @classmethod
-    def create_artist_song(cls, artist_id, song_id):
-        """Create artist_song and return artist_song."""
+#     @classmethod
+#     def create_artist_song(cls, artist_id, song_id):
+#         """Create artist_song and return artist_song."""
 
-        return cls(artist_id=artist_id, song_id=song_id)
-
-
-# def connect_to_db(app):
-#     """Connect the database to our Flask app."""
-#     db.app = app
-#     db.init_app(app)
-
-   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#         return cls(artist_id=artist_id, song_id=song_id)
 
 
 

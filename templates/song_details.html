@@ -5,7 +5,7 @@
 <h1>Analysis for: <br> {{song.track_name}} </h1>
 
 <div class="card">
-    <img class="img-thumbnail img-fluid" src="{{song.album_art}}" alt="album art">
+    <img class="img-thumbnail img-fluid align-self-center" src="{{song.album_art}}" alt="album art" >
     <div class="card-body text-center">
     <ul class="list-unstyled">
         <li class="card-text">Artist: {{song.artist_name}}</li>
@@ -21,9 +21,8 @@
         <li class="card-text">Tempo confidence: {{song.tempo_confidence}}%</li>
         <li class="card-text">Loudness: {{song.loudness}}</li>
     </ul>
-    <button href="javascript:history.back()" class="btn btn-primary">Go back</button>
     <form action="/user/{{user.id}}/playlists/{{playlist.id}}/{{song.id}}/delete" method="POST">
-        <button type="submit" class="btn btn-primary">Remove song!</button>
+        <button type="submit" class="btn btn-danger">Delete</button>
     </form>
 </div>
 

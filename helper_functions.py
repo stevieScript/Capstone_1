@@ -3,8 +3,7 @@ import os
 import base64
 from requests import post, get
 import dotenv
-from models import db, connect_db, User, Song, Artist, ArtistSong, Playlist, PlaylistSong
-import pdb
+
 
 dotenv.load_dotenv('.env')
 

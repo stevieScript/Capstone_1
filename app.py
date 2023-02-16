@@ -1,11 +1,11 @@
-from flask import Flask, render_template, request, flash, redirect, session, g
+from flask import Flask, render_template, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
-from helper_functions import get_token, search_artist, get_songs, generic_search, get_audio_analysis, get_albums, get_album, get_album_tracks, get_album_art
+from helper_functions import get_token, generic_search, get_audio_analysis, get_albums, get_album_tracks
 
-from forms import SignUpForm, LoginForm, SpotifySearchForm, AddTrackForm, PlaylistForm  
-from models import db, connect_db, User, Song, Artist, ArtistSong, Playlist, PlaylistSong 
+from forms import SignUpForm, LoginForm, SpotifySearchForm, AddTrackForm, PlaylistForm, EditUserForm  
+from models import db, connect_db, User, Song, Playlist, PlaylistSong 
 
 CURR_USER_KEY = "curr_user"
 
@@ -48,7 +48,7 @@ def do_logout():
 def homepage():
     """Show homepage."""
     if g.user:
-        return render_template('home.html')
+        return redirect(f'/users/{g.user.id}')
     else:
         return render_template('base.html')
 
@@ -63,7 +63,6 @@ def signup():
                 username=form.username.data,
                 password=form.password.data,
                 email=form.email.data,
-                # user_img=form.user_img.data
             )
             db.session.commit()
         except IntegrityError:
@@ -72,7 +71,7 @@ def signup():
         
         do_login(user)
         flash(f"Welcome, maestro {user.username}!", 'success')
-        return redirect(f'/users/{user.id}')
+        return redirect(f'/user/{user.id}')
 
     else:
         return render_template('register.html', form=form)
@@ -111,48 +110,49 @@ def user_profile(user_id):
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
+    user = User.query.get_or_404(user_id)
+
+    form = PlaylistForm()
+    playlists = Playlist.query.filter(Playlist.user_id == user_id).all()
+
+    return render_template('user.html', user=user, form=form, playlists=playlists)
+
+
+@app.route('/users/<int:user_id>/delete', methods=["POST"])
+def delete_user(user_id):
+    """Delete user."""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
 
     user = User.query.get_or_404(user_id)
-    return render_template('user.html', user=user)
+    db.session.delete(user)
+    db.session.commit()
+    do_logout()
+    flash("User deleted", 'success')
+    return redirect('/')
 
+@app.route('/user/<int:user_id>/edit', methods=["GET", "POST"])
+def edit_user(user_id):
+    """Edit user profile."""
 
-# @app.route('/users/<int:user_id>/delete', methods=["POST"])
-# def delete_user(user_id):
-#     """Delete user."""
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
 
-#     if not g.user:
-#         flash("Access unauthorized.", "danger")
-#         return redirect("/")
+    user = User.query.get_or_404(user_id)
+    form = EditUserForm(obj=user)
 
-#     user = User.query.get_or_404(user_id)
-#     db.session.delete(user)
-#     db.session.commit()
-#     do_logout()
-#     flash("User deleted", 'success')
-#     return redirect('/')
+    if form.validate_on_submit():
+        user.username = form.username.data
+        user.email = form.email.data
+        db.session.commit()
+        flash("User updated", 'success')
+        return redirect(f"/user/{user.id}")
 
-# @app.route('/users/<int:user_id>/edit', methods=["GET", "POST"])
-# def edit_user(user_id):
-#     """Edit user profile."""
-
-#     if not g.user:
-#         flash("Access unauthorized.", "danger")
-#         return redirect("/")
-
-#     user = User.query.get_or_404(user_id)
-#     form = SignUpForm(obj=user)
-
-#     if form.validate_on_submit():
-#         user.username = form.username.data
-#         user.email = form.email.data
-#         user.user_img = form.user_img.data
-
-#         db.session.commit()
-#         flash("User updated", 'success')
-#         return redirect(f"/users/{user.id}")
-
-#     else:
-#         return render_template('edit_user.html', form=form, user=user)
+    else:
+        return render_template('edit_user.html', form=form, user=user)
     
 
 
@@ -212,11 +212,7 @@ def get_artist_albums(artist_id, user_id):
     user = User.query.get_or_404(user_id)
     token = get_token()
     result = get_albums(artist_id,token)
-    # print(result)
     
-    
-
-
     return render_template('albums.html', result=result, user=user)
 
 @app.route('/get_tracks/<int:user_id>/<album_id>', methods=["GET", "POST"])
@@ -228,7 +224,7 @@ def get_tracks(album_id, user_id):
     
     token = get_token()
     result = get_album_tracks(album_id,token)
-    # print(result)
+    
     user = User.query.get_or_404(user_id)
     return render_template('track_listing.html', result=result, user=user)
     
@@ -241,7 +237,6 @@ def audio_analysis(user_id, track_id):
     
     form = AddTrackForm()
     user = User.query.get_or_404(user_id)
-    # lists = db.session.query(Playlist.id, Playlist.name).filter(Playlist.user_id == user_id).all()
     playlists = [(playlist.id, playlist.name) for playlist in user.playlists]
     form.playlist.choices = playlists
     
@@ -250,9 +245,10 @@ def audio_analysis(user_id, track_id):
 
     if form.validate_on_submit():
         playlist_id = form.playlist.data
-        playlist = Playlist.query.get_or_404(playlist_id)
+        # playlist = Playlist.query.get_or_404(playlist_id)
         if Song.query.filter(Song.track_id == track_id).first():
             song = Song.query.filter(Song.track_id == track_id).first()
+            flash("Song already in database", 'success')
         else:
             song = Song.create_song(result)
             db.session.add(song)
@@ -260,9 +256,8 @@ def audio_analysis(user_id, track_id):
         playlist_song = PlaylistSong(playlist_id=playlist_id, song_id=song.id, user_id=user_id)
         db.session.add(playlist_song)
         db.session.commit()
-
-
-        return redirect(f'/user/{user_id}/playlists')
+        flash("Song added to playlist", 'success')
+        return redirect(f'/user/{user_id}/playlists/{playlist_id}')
     else:
         return render_template('audio_analysis.html', result=result, form=form, user=user, track_id=track_id)
 
@@ -278,7 +273,7 @@ def add_track(track_data, user_id):
     
     db.session.add(song)
     db.session.commit()
-
+    flash(f"Added {song.track_name} to playlist.", "success")
     return redirect(f'/user/{user_id}/playlists')
 
 @app.route('/user/<int:user_id>/playlists/<int:playlist_id>/<track_id>', methods=["GET", "POST"])

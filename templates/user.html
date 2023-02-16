@@ -5,4 +5,52 @@
 
 <h1 class="display-1">Welcome {{ user.username }}!</h1>
 
+{% if user.playlists  %}
+<h1>Your playlists: </h1>
+{% for playlist in playlists %}
+
+<div class="card mb-2">
+    <div class="card-body d-flex">
+      <div>
+        <h5 class="card-title text-center"><a href="/user/{{user.id}}/playlists/{{playlist.id}}">{{playlist.name}}</a></h5>
+        {% if playlist.description  %}
+        <h6 class="card-subtitle text-center text-muted">{{playlist.description}}</h6>
+        {% endif %}
+      </div>
+        <div class="ml-auto align-self-center">
+          <form  action="/user/{{user.id}}/playlists/{{playlist.id}}/delete" method="POST">
+              <button type="submit" class="btn btn-danger">Delete Playlist</button>
+          </form>
+      </div>
+    </div>
+</div>
+{% endfor %}
+
+{% else %}
+<h1> You have no playlists yet! Create one below </h1>
+{% endif %}
+<div class="card mb-2">
+  <div class="card-body">
+<form action="/user/{{user.id}}/playlists" method="POST">
+{{ form.hidden_tag() }}
+  
+    {% for field in form
+      if field.widget.input_type != 'hidden' %}
+    <p>
+      {{ field.label }}
+      {{ field(class_="form-control") }}
+  
+      {% for error in field.errors %}
+        <span class="form-text text-danger">{{ error }}</span>
+        {% endfor %}
+    </p>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary">Create Playlist</button>
+</form>
+</div>
+</div>
+
+
+
+
 {% endblock %}

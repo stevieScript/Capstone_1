@@ -6,15 +6,24 @@
 <h1>Your playlists: </h1>
 {% for playlist in playlists %}
 
-<div class="card mb-3">
-    <div class="card-body">
-        <h5 class="card-title"><a href="/user/{{user.id}}/playlists/{{playlist.id}}">{{playlist.name}}</a></h5>
-        <h6 class="card-subtitle mb-2 text-muted">{{playlist.decription}}</h6>
+<div class="card mb-2">
+    <div class="card-body d-flex">
+      <div>
+        <h5 class="card-title text-center"><a href="/user/{{user.id}}/playlists/{{playlist.id}}">{{playlist.name}}</a></h5>
+        {% if playlist.description != None  %}
+        <h6 class="card-subtitle mb-2 text-muted text-center">{{playlist.description}}</h6>
+        {% endif %}
     </div>
+    <div class="ml-auto align-self-center">
+      <form  action="/user/{{user.id}}/playlists/{{playlist.id}}/delete" method="POST">
+          <button type="submit" class="btn btn-danger">Delete Playlist</button>
+      </form>
+  </div>
+  </div>
 </div>
 {% endfor %}
 {% endif %}
-<div class="card mb-3">
+<div class="card mb-2">
   <div class="card-body">
 <form action="/user/{{user.id}}/playlists" method="POST">
 {{ form.hidden_tag() }}
