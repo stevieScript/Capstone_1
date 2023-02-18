@@ -268,7 +268,7 @@ def add_track(track_data, user_id):
         flash("Access unauthorized.", "danger")
         return redirect("/")
     
-    user = User.query.get_or_404(user_id)
+    # user = User.query.get_or_404(user_id)
     song = Song(track_data)
     
     db.session.add(song)

@@ -65,36 +65,8 @@ class User(db.Model):
         else:
             return False
 
-        
-    @classmethod
-    # method to add song to song table, if it's not already there, and playlist_songs table. Or, add song to playlist_songs table if it's already in the song table
-    def add_song(cls, song, playlist_id):
-        """Add song to playlist."""
-
-        # check if song is already in songs table
-        song = Song.query.filter_by(song_id=song['id']).first()
-        # if song is not in songs table, add it
-        if not song:
-            song = Song.create_song(song)
-            db.session.add(song)
-            db.session.commit()
-        # add song to playlist_songs table
-        playlist_song = PlaylistSong(playlist_id=playlist_id, song_id=song.id) 
-        db.session.add(playlist_song)
-        db.session.commit()
-        return song
-    
-    @classmethod
-    # method to remove song from playlist_songs table
-    def remove_song(cls, song_id, playlist_id):
-        """Remove song from playlist."""
-
-        # remove song from playlist_songs table
-        playlist_song = PlaylistSong.query.filter_by(playlist_id=playlist_id, song_id=song_id).first()
-        db.session.delete(playlist_song)
-        db.session.commit()
-        return playlist_song
-
+   
+   
 
 
 class Playlist(db.Model):
@@ -146,6 +118,7 @@ class Song(db.Model):
         db.Integer,
         primary_key=True,
         autoincrement=True,
+
     )
 
     track_id = db.Column(
@@ -177,63 +150,65 @@ class Song(db.Model):
 
     album = db.Column(
         db.Text,
-        nullable=False,
+       
     )
 
     album_art = db.Column(
         db.Text,
-        nullable=False,
+        
     )
 
     tempo = db.Column(
         db.Float,
-        nullable=False,
+        
     )
 
     tempo_confidence = db.Column(
         db.Integer,
-        nullable=False,
+        
     )
 
     time_signature = db.Column(
         db.Integer,
-        nullable=False,
+        
     )
 
     time_signature_confidence = db.Column(
         db.Integer,
-        nullable=False,
+        
     )
 
     key = db.Column(
         db.Text,
-        nullable=False,
+        
     )
 
     key_confidence = db.Column(
         db.Integer,
-        nullable=False,
+        
     )
 
     mode = db.Column(
         db.Text,
-        nullable=False,
+        
     )
 
     mode_confidence = db.Column(
         db.Integer,
-        nullable=False,
+        
     )
 
     duration = db.Column(
         db.Integer,
-        nullable=False,
+       
     )
 
     loudness = db.Column(
         db.Float,
-        nullable=False,
+        
     )
+
+
 
 
     def __repr__(self):
@@ -295,7 +270,7 @@ class PlaylistSong(db.Model):
     def create_playlist_song(cls, playlist_id, song_id, user_id):
         """Create playlist_song and return playlist_song."""
 
-        return cls(playlist_id=playlist_id, song_id=song_id)
+        return cls(playlist_id=playlist_id, song_id=song_id, user_id=user_id)
     
 
 
