@@ -261,20 +261,7 @@ def audio_analysis(user_id, track_id):
     else:
         return render_template('/music/audio_analysis.html', result=result, form=form, user=user, track_id=track_id)
 
-@app.route('/user/<int:user_id>/add_track/<track_id>', methods=["GET", "POST"])
-def add_track(track_data, user_id):
-    # """Add track to playlist_song and song models."""
-    if not g.user:
-        flash("Access unauthorized.", "danger")
-        return redirect("/")
-    
-    # user = User.query.get_or_404(user_id)
-    song = Song(track_data)
-    
-    db.session.add(song)
-    db.session.commit()
-    flash(f"Added {song.track_name} to playlist.", "success")
-    return redirect(f'/user/{user_id}/playlists')
+
 
 @app.route('/user/<int:user_id>/playlists/<int:playlist_id>/<track_id>', methods=["GET", "POST"])
 def track_details(user_id, playlist_id, track_id):

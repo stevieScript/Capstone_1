@@ -28,7 +28,10 @@ class UserViewTestCase(TestCase):
         self.client = app.test_client()
         u = User.register(username="testuser", password="testpassword", email="none@none.com")
         db.session.commit()
+
+        track_id = '6y0igZArWVi6Iz0rj35c1Y'
         self.u = u
+        self.track_id = track_id
 
     def tearDown(self):
         """Clean up fouled transactions."""
@@ -72,6 +75,50 @@ class UserViewTestCase(TestCase):
             self.assertEqual(resp.status_code, 200)
             self.assertIn('Search', str(resp.data))
 
-    
+    def test_audio_analysis(self):
+        """Does audio analysis page work?"""
 
-    
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.u.id
+
+            resp = c.get(f"/audio_analysis/{self.u.id}/{self.track_id}")
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn('Analysis', str(resp.data))
+
+    def test_add_track_to_playlist(self):
+        """Does add track to playlist page work?"""
+
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.u.id
+
+            resp = c.get(f"/audio_analysis/{self.u.id}/{self.track_id}")
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn('Add song', str(resp.data))
+
+    def test_add_playlist(self):
+        """Does add playlist page work?"""
+
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.u.id
+
+            resp = c.get(f"/user/{self.u.id}/playlists")
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn('Create Playlist', str(resp.data))
+
+    def test_get_tracks(self):
+        """Does get tracks page work?"""
+
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.u.id
+
+            resp = c.get(f"/user/{self.u.id}/search")
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn('Search', str(resp.data))
