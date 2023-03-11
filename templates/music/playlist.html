@@ -10,11 +10,11 @@
 <div class="card mb-1">
     <div class="card-body d-flex">
         <div>
-            <h5 class="card-title"><a href="/user/{{user.id}}/playlists/{{playlist.id}}/{{song.track_id}}">{{song.track_name}}</a></h5>
+            <h5 class="card-title"><a href="/user/playlists/{{playlist.id}}/{{song.track_id}}">{{song.track_name}}</a></h5>
             <h6 class="card-subtitle mb-2 text-muted align-self-end">{{song.artist_name}} </h6>
         </div>
         <div class="ml-auto align-self-center ">
-            <form  action="/user/{{user.id}}/playlists/{{playlist.id}}/{{song.id}}/delete" method="POST">
+            <form  action="/user/playlists/{{playlist.id}}/{{song.id}}/delete" method="POST">
                 <button type="submit" class="btn btn-danger">Delete Song</button>
             </form>
         </div>

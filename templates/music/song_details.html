@@ -21,7 +21,7 @@
         <li class="card-text">Tempo confidence: {{song.tempo_confidence}}%</li>
         <li class="card-text">Loudness: {{song.loudness}}</li>
     </ul>
-    <form action="/user/{{user.id}}/playlists/{{playlist.id}}/{{song.id}}/delete" method="POST">
+    <form action="/user/playlists/{{playlist.id}}/{{song.id}}/delete" method="POST">
         <button type="submit" class="btn btn-danger">Delete</button>
     </form>
 </div>

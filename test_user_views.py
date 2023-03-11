@@ -10,6 +10,7 @@ from app import app, CURR_USER_KEY
 app.config['WTF_CSRF_ENABLED'] = False
 app.config['DEBUG_TB_HOSTS'] = ['dont-show-debug-toolbar']
 app.config['TESTING'] = True
+app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 db.drop_all()
 db.create_all()
@@ -122,3 +123,61 @@ class UserViewTestCase(TestCase):
 
             self.assertEqual(resp.status_code, 200)
             self.assertIn('Search', str(resp.data))
+
+    def test_delete_playlist(self):
+        """Does delete playlist page work?"""
+
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.u.id
+
+            p = Playlist(name="test", user_id=self.u.id)
+            db.session.add(p)
+            db.session.commit()
+
+            resp = c.post(f"/user/{self.u.id}/playlists/1/delete", follow_redirects=True)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn('Create Playlist', str(resp.data))
+
+            db.session.delete(p)
+
+    def test_delete_track(self):
+        """Does delete track page work?"""
+
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.u.id
+
+            p = Playlist(name="test", user_id=self.u.id)
+            db.session.add(p)
+            db.session.commit()
+
+            s = Song(track_id=self.track_id, track_name="testname", track_uri='testuri', artist_name="test", artist_id="test")
+            db.session.add(s)
+            db.session.commit()
+
+            ps = PlaylistSong(playlist_id=p.id, song_id=s.id, user_id=self.u.id)
+            db.session.add(ps)
+            db.session.commit()
+
+            resp = c.post(f"/user/{self.u.id}/playlists/1/1/delete", follow_redirects=True)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn('Playlist', str(resp.data))
+
+            db.session.delete(ps)
+            db.session.delete(p)
+            db.session.delete(s)
+
+    def test_logout(self):
+        """Does logout page work?"""
+
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.u.id
+
+            resp = c.get(f"/logout", follow_redirects=True)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn('Login', str(resp.data))
