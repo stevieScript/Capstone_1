@@ -8,7 +8,7 @@
     <img class="align-self-center img-thumbnail img-fluid" src="{{result.album_art}}" alt="album art">
     <div class="card-body text-center">
     <ul class="list-unstyled">
-        <li class="card-text">Artist: {{result.artist_name}}</li>
+        <li class="card-text lead">Artist: {{result.artist_name}}</li>
         <li class="card-text">Album: {{result.album}}</li>
         <li class="card-text" >Duration in minutes: {{result.duration}}</li>
         <li class="card-text" >Key signature: {{result.key}}</li>
@@ -21,6 +21,8 @@
         <li class="card-text">Tempo confidence: {{result.tempo_confidence}}%</li>
         <li class="card-text">Loudness: {{result.loudness}}</li>
     </ul>
+
+    {% if user.playlists %}
     <form action="/audio_analysis/{{track_id}}" method="POST">
         {{ form.hidden_tag() }}
   
@@ -37,6 +39,10 @@
         {% endfor %}
         <button type="submit" class="btn btn-primary">Add song!</button>
     </form>
+    {% else %}
+    <p>You must <a href="/user/playlists">create a playlist</a> first to add this song!</p>
+    
+    {% endif %}
 </div>
 
 

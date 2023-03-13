@@ -88,7 +88,7 @@ def login():
                                  form.password.data)
         if user:
             do_login(user)
-            return redirect(f'/user/{user.id}')
+            return redirect(f'/user')
 
         flash("Invalid credentials.", 'danger')
 
@@ -248,7 +248,6 @@ def audio_analysis( track_id):
         # playlist = Playlist.query.get_or_404(playlist_id)
         if Song.query.filter(Song.track_id == track_id).first():
             song = Song.query.filter(Song.track_id == track_id).first()
-            flash("Song already in database", 'success')
         else:
             song = Song.create_song(result)
             db.session.add(song)

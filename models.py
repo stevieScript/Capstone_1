@@ -97,6 +97,8 @@ class Playlist(db.Model):
 
     songs = db.relationship('Song', secondary='playlist_songs', backref='songs')
 
+    playlist_songs = db.relationship('PlaylistSong', backref='playlist', cascade="all, delete" )
+
     def __repr__(self):
         return f'<Playlist {self.id} {self.name} {self.description}>'
 
@@ -242,28 +244,31 @@ class PlaylistSong(db.Model):
     id = db.Column(
         db.Integer,
         primary_key=True,
-        autoincrement=True, 
+        autoincrement=True,
     )
 
     playlist_id = db.Column(
         db.Integer,
         db.ForeignKey('playlists.id'),
-        nullable=False
+      
+       
     )
 
     song_id = db.Column(
         db.Integer,
         db.ForeignKey('songs.id'),
-        nullable=False
+        
+       
     )
 
     user_id = db.Column(
         db.Integer,
         db.ForeignKey('users.id'),
-        nullable=False
+        nullable=False,
+        
     )
 
-    playlist = db.relationship('Playlist', backref='playlist_songs')
+    # playlist = db.relationship('Playlist', backref='playlist_songs')
     song = db.relationship('Song', backref='playlist_songs')
 
     @classmethod
