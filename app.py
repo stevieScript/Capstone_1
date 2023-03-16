@@ -26,16 +26,13 @@ connect_db(app)
 @app.before_request
 def add_user_to_g():
     """If we're logged in, add curr user to Flask global."""
-
     if CURR_USER_KEY in session:
         g.user = User.query.get(session[CURR_USER_KEY])
-
     else:
         g.user = None
 
 def do_login(user):
     """Log in user."""
-
     session[CURR_USER_KEY] = user.id
 
 def do_logout():
@@ -56,7 +53,6 @@ def homepage():
 def signup():
     """Handle user signup."""
     form = SignUpForm()
-
     if form.validate_on_submit():
         try:
             user = User.register(
@@ -80,9 +76,7 @@ def signup():
 @app.route('/login', methods=["GET", "POST"])
 def login():
     """Handle user login."""
-
     form = LoginForm()
-
     if form.validate_on_submit():
         user = User.authenticate(form.username.data,
                                  form.password.data)
@@ -97,7 +91,6 @@ def login():
 @app.route('/logout')
 def logout():
     """Handle logout of user."""
-
     do_logout()
     flash("Logged out", 'success')
     return redirect('/')
@@ -106,7 +99,6 @@ def logout():
 @app.route('/user')
 def user_profile():
     """Show user profile."""
-
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
@@ -245,7 +237,6 @@ def audio_analysis( track_id):
 
     if form.validate_on_submit():
         playlist_id = form.playlist.data
-        # playlist = Playlist.query.get_or_404(playlist_id)
         if Song.query.filter(Song.track_id == track_id).first():
             song = Song.query.filter(Song.track_id == track_id).first()
         else:
@@ -260,15 +251,12 @@ def audio_analysis( track_id):
     else:
         return render_template('/music/audio_analysis.html', result=result, form=form, user=user, track_id=track_id)
 
-
-
 @app.route('/user/playlists/<int:playlist_id>/<track_id>', methods=["GET", "POST"])
 def track_details(playlist_id, track_id):
     """Show track details."""
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
-    
     user = User.query.get_or_404(session[CURR_USER_KEY])
     playlist = Playlist.query.get_or_404(playlist_id)
     song = Song.query.filter(Song.track_id == track_id).first()
@@ -297,10 +285,6 @@ def delete_song( playlist_id, song_id):
     db.session.commit()
     flash("Song deleted from playlist.", "success")
     return redirect(f'/user/playlists/{playlist_id}')
-
-    
-    
-
 
 @app.after_request
 def add_header(req):
