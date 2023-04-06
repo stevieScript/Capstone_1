@@ -13,8 +13,11 @@ You can create playlists based on different Key signatures that you are studying
 The Spotify API uses Oauth token for verification.
 
 If you want to run the app locally:
+<br>
 souce venv/bin/activate
+<br>
 pip install requirements.txt
+<br>
 flask run
 
 Link to Spotify API
