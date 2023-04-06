@@ -11,8 +11,8 @@ keys = ['C', 'C#/Db', 'D', 'D#/Eb', 'E', 'F', 'F#/Gb', 'G', 'G#/Ab', 'A', 'A#/Bb
 
 mode = ['Minor', 'Major']
 
-client_id = os.getenv('CLIENT_ID')
-client_secret = os.getenv('CLIENT_SECRET')
+client_id = os.environ.get('CLIENT_ID', os.getenv('CLIENT_ID'))
+client_secret = os.environ.get('CLIENT_SECRET', os.getenv('CLIENT_SECRET'))
 
 def get_token():
 
