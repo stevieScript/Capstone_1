@@ -18,6 +18,10 @@ souce venv/bin/activate
 <br>
 pip install requirements.txt
 <br>
+createdb maestro
+<br>
+python3 seed.py
+<br>
 flask run
 
 Link to Spotify API
