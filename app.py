@@ -7,6 +7,8 @@ from helper_functions import get_token, generic_search, get_audio_analysis, get_
 from forms import SignUpForm, LoginForm, SpotifySearchForm, AddTrackForm, PlaylistForm, EditUserForm  
 from models import db, connect_db, User, Song, Playlist, PlaylistSong 
 
+import os
+
 CURR_USER_KEY = "curr_user"
 
 app = Flask(__name__)
@@ -15,7 +17,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///maestro'
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
-app.config['SECRET_KEY'] = 'maestro'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', "maestro2468")
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 debug = DebugToolbarExtension(app)
