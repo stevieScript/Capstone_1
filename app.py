@@ -64,8 +64,13 @@ def signup():
             )
             db.session.commit()
         except IntegrityError:
-            flash("Username already taken", 'danger')
+            db.session.rollback()
+            if(User.query.filter_by(username=form.username.data).first()):
+                flash("Username already taken", 'danger')
+            elif(User.query.filter_by(email=form.email.data).first()):
+                flash("Email already taken", 'danger')
             return render_template('register.html', form=form)
+           
         
         do_login(user)
         flash(f"Welcome, maestro {user.username}!", 'success')
