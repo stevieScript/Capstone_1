@@ -1,26 +1,56 @@
 {% extends 'base.html'  %}
 
+
+
+
 {% block content %}
 
-<h1>Track listing for </h1>
+{%  with playlists=playlists %}
+{% include 'music/playlist_form.html'%}
+{%  endwith %}
 
+<h1>Track listing for: {{result[0].album_name}} </h1>
+<!-- {% for playlist in playlists %}
+        <p>{{ playlist[1] }}</p>
+        {% endfor %} -->
+<div class="container">
+<div class="row">
 {% for item in result %}
 
-<div class="card">
+<div class="col-6 mb-1 p-1 d-flex align-items-stretch">
+    <div class="card d-flex flex-row flex-grow-1">
+
+    <!-- {% if item.album_art  %}
+    <div>
+        <img src="{{item.album_art}}" height="200px" width="200px" alt="album art" class="img-thumbnail img-fluid">
+    </div>
+    {% endif %} -->
+    <!-- Testing playlists variable -->
+
+
+
     <div class="card-body">
-    <!-- add album image if it exists in item.album_art -->
-    {% if item.image  %}
-    <img src="{{item.image}}" alt="album art" class="img-thumbnail">
-    {% endif %}
-    <p class="lead">Track Name: {{ item.track_name }}</p>
-    <p>Track Number: {{ item.track_number }}</p>
-    <p>Duration: {{ item.duration }}</p>
-    <p>Explicit: {{ item.explicit }}</p>
-    <a href="/audio_analysis/{{item.track_id}}" class="card-link d-block">Get audio analysis</a>
+        <p><a href="/audio_analysis/{{item.track_id}}" class="card-link ">Track Name: {{ item.track_name }}</a></p>
+        <p class="card-text">Track Number: {{ item.track_number }}</p>
+        <p class="card-text">Duration: {{ item.duration }}</p>
+        <p class="card-text">Explicit: {{ item.explicit }}</p>
+        <p class="card-text">Release Date: {{ item.release_date }}</p>
+        <p class="card-text">Popularity: {{ item.popularity }}</p>
+        
+        
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal" data-track-id="{{item.track_id}}">Add to playlist</button>
+    </div>
+
+     
 </div>
 </div>
 
 {% endfor %}
+</div>
+</div>
+
+
+
 
 {% endblock %}
 

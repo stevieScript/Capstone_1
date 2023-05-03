@@ -1,13 +1,13 @@
-from flask import Flask, render_template, flash, redirect, session, g
+from flask import Flask, render_template, flash, redirect, request, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
-from helper_functions import get_token, generic_search, get_audio_analysis, get_albums, get_album_tracks
+from helper_functions import get_token, generic_search, get_audio_analysis, get_albums, get_album_tracks, get_pop_recommendations
 
 from forms import SignUpForm, LoginForm, SpotifySearchForm, AddTrackForm, PlaylistForm, EditUserForm  
 from models import db, connect_db, User, Song, Playlist, PlaylistSong 
 
-import os
+import os, json
 
 CURR_USER_KEY = "curr_user"
 
@@ -111,10 +111,12 @@ def user_profile():
         return redirect("/")
     user = User.query.get_or_404(session[CURR_USER_KEY])
 
-    form = PlaylistForm()
+    # form = PlaylistForm()
     playlists = Playlist.query.filter(Playlist.user_id == user.id).all()
-
-    return render_template('/user/user.html', user=user, form=form, playlists=playlists)
+    token = get_token()
+    result = get_pop_recommendations(token)
+    print(result)
+    return render_template('/user/user.html', user=user, playlists=playlists, result=result)
 
 
 @app.route('/user/delete', methods=["POST"])
@@ -158,20 +160,113 @@ def edit_user():
 @app.route('/user/playlists', methods=["GET", "POST"])
 def show_playlists():
     """Show user playlists."""
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+        
+    user = User.query.get_or_404(session[CURR_USER_KEY])
+    playlists = Playlist.query.filter(Playlist.user_id == user.id).all()
+    if request.method == "POST":
+        data = request.get_json()
+        playlist_name = request.form.get('playlist_name')
+        playlist_description = request.form.get('playlist_description')
+        print(f'data: {playlist_name}, {playlist_description}')
+        if playlist_name:
+            playlist = Playlist(name=playlist_name, user_id=user.id, description=playlist_description)
+            db.session.add(playlist)
+            db.session.commit()
+            return redirect('/user/playlists')
+    return render_template('/music/playlists.html', user=user, playlists=playlists)
+
+
+# @app.route('/user/playlists', methods=["GET", "POST"])
+# def create_playlist():
+#     """Create a new playlist and optionally add a song to it."""
+
+#     if not g.user:
+#         flash("Access unauthorized.", "danger")
+#         return redirect("/")
+
+#     user = User.query.get_or_404(session[CURR_USER_KEY])
+
+#     # playlist_name = request.form["playlist_name"]
+#     # playlist_description = request.form["playlist_description"]
+#     # track_id = request.form.get("track_id", None)  # Get the track_id if present, otherwise set it to None
+
+#     playlist_name = request.form.get('playlist_name')
+#     playlist_description = request.form.get('playlist_description')
+#     track_id = request.form.get('track_id', None)
+#     # print(data)
+#     print(f'data: {playlist_name}, {track_id}')
+
+
+#     playlist = Playlist(name=playlist_name, description=playlist_description, user_id=user.id)
+#     db.session.add(playlist)
+#     db.session.commit()
+
+#     # Add the song to the newly created playlist, only if a track_id is provided
+#     if track_id is not None:
+#         token = get_token()
+#         result = get_audio_analysis(track_id, token)
+
+#         if Song.query.filter(Song.track_id == track_id).first():
+#             song = Song.query.filter(Song.track_id == track_id).first()
+#         else:
+#             song = Song.create_song(result)
+#             db.session.add(song)
+#             db.session.commit()
+
+#         playlist_song = PlaylistSong(playlist_id=playlist.id, song_id=song.id, user_id=user.id)
+#         db.session.add(playlist_song)
+#         db.session.commit()
+#         flash("Song added to playlist", 'success')
+#     else:
+#         flash("Empty playlist created", 'success')
+
+#     return redirect(f'/user/playlists/{playlist.id}')
+
+# route for modal that will create a playlist and add the selected song to the newly created playlist. 
+@app.route('/user/playlists/add', methods=["POST"])
+def add_song_to_playlist():
+    """Add a song to a playlist."""
 
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
-    form = PlaylistForm()
-    user = User.query.get_or_404(session[CURR_USER_KEY])
-    playlists = Playlist.query.filter(Playlist.user_id == user.id).all()
-    if form.validate_on_submit():
-        playlist = Playlist(name=form.playlist_name.data, user_id=user.id)
-        db.session.add(playlist)
-        db.session.commit()
-        return redirect(f'/user/playlists')
 
-    return render_template('/music/playlists.html', user=user, form=form, playlists=playlists)
+    user = User.query.get_or_404(session[CURR_USER_KEY])
+
+    playlist_name = request.form.get('playlist_name')
+    playlist_description = request.form.get('playlist_description')
+    track_id = request.form.get('track_id', None)
+    print(f'data: {playlist_name}, {track_id}')
+
+
+    playlist = Playlist(name=playlist_name, description=playlist_description, user_id=user.id)
+    db.session.add(playlist)
+    db.session.commit()
+
+    # Add the song to the newly created playlist, only if a track_id is provided
+    if track_id is not None:
+        token = get_token()
+        result = get_audio_analysis(track_id, token)
+
+        if Song.query.filter(Song.track_id == track_id).first():
+            song = Song.query.filter(Song.track_id == track_id).first()
+        else:
+            song = Song.create_song(result)
+            db.session.add(song)
+            db.session.commit()
+
+        playlist_song = PlaylistSong(playlist_id=playlist.id, song_id=song.id, user_id=user.id)
+        db.session.add(playlist_song)
+        db.session.commit()
+        flash("Song added to playlist", 'success')
+    else:
+        flash("Empty playlist created", 'success')
+
+    return redirect(f'/user/playlists/{playlist.id}')
+
 
 @app.route('/user/playlists/<int:playlist_id>', methods=["GET", "POST"])
 def show_playlist( playlist_id):
@@ -179,11 +274,11 @@ def show_playlist( playlist_id):
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
-    form = PlaylistForm()
+    # form = PlaylistForm()
     user = User.query.get_or_404(session[CURR_USER_KEY])
     playlist = Playlist.query.get_or_404(playlist_id)
     songs = PlaylistSong.query.filter(PlaylistSong.playlist_id == playlist_id).all()
-    return render_template('/music/playlist.html', user=user, form=form, playlist=playlist, songs=songs)
+    return render_template('/music/playlist.html', user=user, playlist=playlist, songs=songs)
 
 @app.route('/search', methods=["GET", "POST"])
 def search():
@@ -192,15 +287,23 @@ def search():
         flash("Access unauthorized.", "danger")
         return redirect("/")
     
-    form = SpotifySearchForm()
+    # form = SpotifySearchForm()
     user = User.query.get_or_404(session[CURR_USER_KEY])
 
-    if form.validate_on_submit():
-        token = get_token()
-        result = generic_search(form.search_type.data, form.search_term.data, token)
-        return render_template('/music/search_results.html', result=result, user=user)
+
+    if request.method == "GET":
+        
+        search_type = request.args.get('search_type')
+        search_term = request.args.get('search_term')
+        if search_term and search_type:
+            token = get_token()
+            result = generic_search(search_type, search_term, token)
+            return render_template('/music/search_results.html', result=result, user=user, search_term=search_term)
+        else: 
+            return render_template('/music/search.html', user=user)
     else:
-        return render_template('/music/search.html', form=form)
+        return render_template('/music/search.html', user=user)
+
     
 @app.route('/get_albums/<artist_id>', methods=["GET", "POST"])
 def get_artist_albums(artist_id):
@@ -223,27 +326,34 @@ def get_tracks(album_id):
     
     token = get_token()
     result = get_album_tracks(album_id,token)
-    
+    # form = AddTrackForm()
+    # playlist_form = PlaylistForm()
     user = User.query.get_or_404(session[CURR_USER_KEY])
-    return render_template('/music/track_listing.html', result=result, user=user)
+    playlists = [(playlist.id, playlist.name) for playlist in user.playlists]
+    # form.playlist.choices = playlists
+    print(playlists)
+    return render_template('/music/track_listing.html', result=result, user=user, playlists=playlists)
     
 @app.route('/audio_analysis/<track_id>', methods=["GET", "POST"])
-def audio_analysis( track_id):
+def audio_analysis(track_id):
     """Show audio analysis of song."""
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
     
-    form = AddTrackForm()
+    # form = AddTrackForm()
     user = User.query.get_or_404(session[CURR_USER_KEY])
     playlists = [(playlist.id, playlist.name) for playlist in user.playlists]
-    form.playlist.choices = playlists
+    # form.playlist.choices = playlists
     
     token = get_token()
     result = get_audio_analysis(track_id, token)
 
-    if form.validate_on_submit():
-        playlist_id = form.playlist.data
+    if request.method == "POST":
+        data = request.get_json()
+        playlist_id = data.get('playlist_id')
+        print(playlist_id)
+        print(track_id)
         if Song.query.filter(Song.track_id == track_id).first():
             song = Song.query.filter(Song.track_id == track_id).first()
         else:
@@ -256,7 +366,7 @@ def audio_analysis( track_id):
         flash("Song added to playlist", 'success')
         return redirect(f'/user/playlists/{playlist_id}')
     else:
-        return render_template('/music/audio_analysis.html', result=result, form=form, user=user, track_id=track_id)
+        return render_template('/music/audio_analysis.html', result=result, user=user, track_id=track_id, playlists=playlists)
 
 @app.route('/user/playlists/<int:playlist_id>/<track_id>', methods=["GET", "POST"])
 def track_details(playlist_id, track_id):

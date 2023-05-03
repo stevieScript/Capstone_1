@@ -31,26 +31,33 @@
 {% endif %}
 <div class="card mb-2">
   <div class="card-body">
-<form action="/user/playlists" method="POST">
-{{ form.hidden_tag() }}
-  
-    {% for field in form
-      if field.widget.input_type != 'hidden' %}
-    <p>
-      {{ field.label }}
-      {{ field(class_="form-control") }}
-  
-      {% for error in field.errors %}
-        <span class="form-text text-danger">{{ error }}</span>
-        {% endfor %}
-    </p>
-    {% endfor %}
-    <button type="submit" class="btn btn-primary">Create Playlist</button>
-</form>
+{% include 'music/create_playlist.html' %}
 </div>
 </div>
 
+<div class="container">
+  <div class="row">
+{% for item in result %}
 
+<div class="col-6 mb-1 p-1 d-flex align-items-stretch">
+    <div class="card d-flex flex-row flex-grow-1">
+  {% if item.album_art  %}
+  
+  <img class="card-img-left" height="200px" width="200px" src="{{item.album_art}}" alt="album art" >
+ 
+  {% endif %}
+  
+  <div class="card-body">
+      <p><a  href="/get_albums/{{item.artist_id}}" class="card-link">Artist: {{item.artist_name}}</a></p>
+      <p></p><a  href="/get_tracks/{{item.album_id}}" class="card-link">Album: {{item.album}}</a></p>
+      <p></p><a  href="/audio_analysis/{{item.track_id}}" class="card-link">Track: {{item.track_name}}</a></p>
+  </div>
+</div>
+</div>
+{% endfor %}
+
+</div>
+</div>
 
 
 {% endblock %}

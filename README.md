@@ -14,15 +14,29 @@ The Spotify API uses Oauth token for verification.
 
 If you want to run the app locally:
 <br>
-souce venv/bin/activate
+'''python3 -m venv venv'''
 <br>
-pip install requirements.txt
+'''source venv/bin/activate'''
 <br>
-createdb maestro
+'''pip install -r requirements.txt'''
 <br>
-python3 seed.py
+'''createdb maestro'''
 <br>
-flask run
+'''python3 seed.py'''
+<br>
+'''flask run'''
+<br>
+You will need to create a Spotify developer account and get a client id and client secret. To set up the environment variables, create a .env file in the root directory and add the following:
+
+CLIENT_ID = 'your client id'
+CLIENT_SECRET = 'your client secret'
+
+Or you can set them in your terminal with the following commands:
+
+'''export CLIENT_ID='your client id' '''
+
+'''export CLIENT_SECRET='your client secret' '''
+<br>
 
 Link to Spotify API
 https://developer.spotify.com/documentation/

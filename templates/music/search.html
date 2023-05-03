@@ -2,26 +2,22 @@
 
 {% block content %}
 
-<h1>HI</h1>
+<h1>Search by track, album or artist:</h1>
 
-<form method="POST" action="/search">
-
-    {{ form.hidden_tag() }}
-  
-    {% for field in form
-      if field.widget.input_type != 'hidden' %}
-    <p>
-      {{ field.label }}
-      {{ field(class_="form-control") }}
-  
-      {% for error in field.errors %}
-      <span class="form-text text-danger">{{ error }}</span>
-      {% endfor %}
-    </p>
-    {% endfor %}
-  
-    <button class="btn btn-primary" type="submit">Search</button>
-  
+<form method="GET" action="/search">
+  <div>
+    
+    <input class="form-control" type="text" id="search_term" name="search_term" required placeholder="Enter artist, track or album">
+  </div>
+  <div>
+    <label class="form-label" for="search_type">Search Type:</label>
+    <select class="form-select" id="search_type" name="search_type">
+      <option value="track">Track</option>
+      <option value="artist">Artist</option>
+      <option value="album">Album</option>
+    </select>
+  </div>
+  <button class="btn btn-primary mt-2" type="submit" id="search">Search</button>
   </form>
 
 

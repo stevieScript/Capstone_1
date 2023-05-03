@@ -2,50 +2,63 @@
 
 {% block content %}
 
-<h1>Search results for {{result[0]['name']}}</h1>
+<h1>Search results for {{search_term}}</h1>
 
+
+<div class="container">
+<div class="row">
 {% for item in result %}
 
 {% if item.type == 'track' %}
-<div class="card">
-    <div class="card-body">
+<div class="col-6 mb-1 p-1 d-flex align-items-stretch">
+    <div class="card d-flex flex-row flex-grow-1">
     {% if item.image != '' %}
     <img height="200px" width="200px" src="{{item.image}}" alt="album art" class="img-thumbnail img-fluid">
     {% endif %}
-    <p>Track name: {{ item.name }}</p>
-    <p>Artist: {{ item.artist }}</p>
-    <p>Album: {{ item.album }}</p>
-    <a href="/audio_analysis/{{item.id}}" class="card-link">Get track analysis for {{item.name}}</a>
+    <div class="card-body">
+        <p><a href="/audio_analysis/{{item.id}}" class="card-link ">Name: {{ item.name }}</a></p>
+        <p><a href="/get_albums/{{item.artist_id}}" class="card-link ">Artist: {{ item.artist }}</a></p>
+        <p><a href="/get_tracks/{{item.album_id}}" class="card-link ">Album: {{ item.album }}</a></p>
+    </div>
 </div>
 </div>
 {% endif %}
 
 {% if item.type == 'artist' %}
-    <div class="card">
-    <div class="card-body">
-    {% if item.image %}
-    <img src="{{item.image}}" alt="album art" class="img-thumbnail">
-    {% endif %}
-    <p>Artist: {{ item.name }}</p>
-    <a href="/get_albums/{{item.id}}" class="card-link">Get more albums from {{item.name}}</a>
+<div class="col-6 mb-1 p-1 d-flex align-items-stretch">
+    <div class="card d-flex flex-row flex-grow-1">
+        {% if item.image %}
+            <img src="{{item.image}}" alt="album art" class="img-thumbnail" height="200px" width="200px">
+        {% endif %}
+        
+            <div class="card-body">
+                <p>Artist: {{ item.name }}</p>
+                <a href="/get_albums/{{item.id}}" class="card-link">Get more albums from {{item.name}}</a>
+            </div>
     </div>
     </div>
 {% endif %}
 
 {% if item.type == 'album' %}
-    <div class="card">
-    <div class="card-body">
-    <!-- add album image if it exists in item.album_art -->
-    {% if item.image != '' %}
-    <img src="{{item.image}}" alt="album art" class="img-thumbnail">
-    {% endif %}
-    <p>Album: {{ item.name }}</p>
-    <p>Artist: {{ item.artist }}</p>
-    <a href="/get_tracks/{{item.id}}" class="card-link d-block">See tracks from this album {{item.name}}</a>
-    </div>
-    </div>
-{% endif %}
+<div class="col-6 mb-1 p-1 d-flex align-items-stretch">
+    <div class="card d-flex flex-row flex-grow-1">
+        <!-- add album image if it exists in item.album_art -->
+        {% if item.image != '' %}
+        
+            <img src="{{item.image}}" alt="album art" class="img-thumbnail" height="200px" width="200px">
+        
+        {% endif %}
 
-{% endfor %}
+        <div class="card-body">
+            <p><a href="/get_tracks/{{item.id}}">Album: {{ item.name }}</a></p>
+            <p><a href="/get_albums/{{item.artist}}">Artist: {{ item.artist }}</a></p>
+            <p><a href="/get_tracks/{{item.id}}" class="card-link d-block">Track list: {{item.name}}</a></p>
+        </div>
+    </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+</div>
 
 {% endblock %}
