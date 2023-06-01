@@ -1,88 +1,55 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const myModalElement = document.querySelector('#myModal');
-  // const myModalInstance = new bootstrap.Modal(myModalElement);
-  const playlistForm = document.querySelector('#playlist-form');
-  // const addTrack = document.querySelector('#add-track');
-  const search = document.querySelector('#search');
-  const createPlaylistForm = document.getElementById('create-playlist-modal');
+$(document).ready(function () {
+	console.log('DOM loaded');
+	const myModalElement = $('#myModal');
+	const playlistForm = $('#playlist-form');
+	const search = $('#search');
+	const createPlaylistForm = $('#create-add-playlist');
 
-  let currentTrackId = null;
+	let currentTrackId = null;
 
-  myModalElement.addEventListener('shown.bs.modal', (e) => {
-    const button = e.relatedTarget;
-    currentTrackId = button.getAttribute('data-track-id');
-    playlistForm.setAttribute('action', `/audio_analysis/${currentTrackId}`);
-    createPlaylistForm.setAttribute('action', `/user/playlists`);
-    console.log(currentTrackId)
-  });
+	myModalElement.on('shown.bs.modal', function (e) {
+		const button = $(e.relatedTarget);
+		currentTrackId = button.data('track-id');
+		console.log(currentTrackId);
+	});
 
-  playlistForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const playlist_id = document.getElementById("playlist").value;
+	playlistForm.on('submit', async function (e) {
+		e.preventDefault();
+		console.log('Adding track to playlist');
+		const playlist_id = $('#playlist').val();
 
-    if (!currentTrackId) {
-      console.error("No track ID found");
-      return;
-    }
+		if (!currentTrackId) {
+			console.error('No track ID found');
+			return;
+		}
 
-    axios.post(`/audio_analysis/${currentTrackId}`, {
-      track_id: currentTrackId,
-      playlist_id: playlist_id
-    })
-    .then((response) => {
-      // console.log(response.data);
-      // myModalInstance.hide(); // Close the modal
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-  });
+		const res = await axios.post(`/audio_analysis/${currentTrackId}`, {
+			track_id: currentTrackId,
+			playlist_id: playlist_id,
+		});
+		console.log(res.data);
+	});
 
-  search.addEventListener('submit', (e) => {
-    e.preventDefault();
-  });
+	search.on('submit', function (e) {
+		e.preventDefault();
+	});
 
-  createPlaylistForm.addEventListener('submit', async (e) => {
-    console.log("Creating playlist")
-    e.preventDefault();
-    const button = e.relatedTarget;
-    
-    const trackId = button.getAttribute('data-track-id');
-    const playlistName = document.getElementById("name").value;
-    const playlistDescription = document.getElementById("description").value;
+	createPlaylistForm.on('submit', async function (e) {
+		e.preventDefault();
+		console.log('Creating playlist');
+		const playlistName = $('#name').val();
+		const playlistDescription = $('#description').val();
 
-    const dataToSend = JSON.stringify({
-      playlist_name: playlistName,
-      playlist_description: playlistDescription,
-      track_id: currentTrackId
-    });
-  
-    console.log("Sending data:", dataToSend);
+		const dataToSend = {
+			playlist_name: playlistName,
+			playlist_description: playlistDescription,
+			track_id: currentTrackId,
+		};
 
-    try {
-        const response = await axios.post('/user/playlists/add', JSON.stringify( {
-            playlist_name: playlistName,
-            playlist_description: playlistDescription,
-            track_id: trackId
-          }),{
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          });
-        // debugger;
-        console.log(response.data);
-        const playlist_id = response.data.id; // Get the newly created playlist ID
+		console.log('Sending data:', dataToSend);
 
-        // Add the song to the newly created playlist
-        // const addSongResponse = await axios.post(`/audio_analysis/${currentTrackId}`, {
-        //     track_id: currentTrackId,
-        //     playlist_id: playlist_id
-        // });
-
-        console.log(addSongResponse.data);
-    } catch (error) {
-        console.error(error);
-    }
+		const response = await axios.post('/user/playlists/add', dataToSend);
+		// debugger;
+		console.log(response.data);
+	});
 });
-});
-

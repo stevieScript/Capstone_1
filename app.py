@@ -235,10 +235,11 @@ def add_song_to_playlist():
         return redirect("/")
 
     user = User.query.get_or_404(session[CURR_USER_KEY])
-
-    playlist_name = request.form.get('playlist_name')
-    playlist_description = request.form.get('playlist_description')
-    track_id = request.form.get('track_id', None)
+    
+    data = request.get_json()
+    playlist_name = data.get('playlist_name')
+    playlist_description = data.get('playlist_description')
+    track_id = data.get('track_id', None)
     print(f'data: {playlist_name}, {track_id}')
 
 
@@ -247,23 +248,23 @@ def add_song_to_playlist():
     db.session.commit()
 
     # Add the song to the newly created playlist, only if a track_id is provided
-    if track_id is not None:
-        token = get_token()
-        result = get_audio_analysis(track_id, token)
+    # if track_id is not None:
+    token = get_token()
+    result = get_audio_analysis(track_id, token)
 
-        if Song.query.filter(Song.track_id == track_id).first():
+    if Song.query.filter(Song.track_id == track_id).first():
             song = Song.query.filter(Song.track_id == track_id).first()
-        else:
+    else:
             song = Song.create_song(result)
             db.session.add(song)
             db.session.commit()
 
-        playlist_song = PlaylistSong(playlist_id=playlist.id, song_id=song.id, user_id=user.id)
-        db.session.add(playlist_song)
-        db.session.commit()
-        flash("Song added to playlist", 'success')
-    else:
-        flash("Empty playlist created", 'success')
+    playlist_song = PlaylistSong(playlist_id=playlist.id, song_id=song.id, user_id=user.id)
+    db.session.add(playlist_song)
+    db.session.commit()
+    flash("Song added to playlist", 'success')
+    # else:
+    # flash("Empty playlist created", 'success')
 
     return redirect(f'/user/playlists/{playlist.id}')
 

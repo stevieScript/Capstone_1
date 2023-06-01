@@ -1,32 +1,78 @@
-
-
-<div class="modal" id="myModal" tabindex="-1">
-  <div class="modal-dialog">
-      <div class="modal-content">
-          <div class="modal-header">
-              <div class="modal-body">
-                  <!-- <h5 class="modal-title">Add to playlist</h5> -->
-                  <button class="close" data-bs-dismiss="modal">&times;</button>
-                  <form method="post" id="playlist-form">
-                    <label class="form-label" for="playlist">Add song to playlist:</label>
-                    <select class="form-control" name="playlist" id="playlist">
-                      {% for playlist in playlists %}
-                      <option value="{{ playlist[0] }}">{{ playlist[1] }}</option>
-                      {% endfor %}
-                    </select>
-                    <button class="btn btn-primary" data-bs-dismiss="modal" id="add-track" type="submit">Add Track</button>
-                  </form>
-                  <form id="create-playlist-modal" method="post">
-                    <label class="form-label" for="playlist_name">Playlist Name:</label>
-                    <input class="form-control" type="text" id="name" name="playlist_name" required>
-                    <label class="form-label" for="playlist_description">Playlist Description (Optional):</label>
-                    <input class="form-control" type="text" id="description" name="playlist_description">
-                    <button class="btn btn-primary mt-2" type="submit" id="create">Create Playlist</button>
-                </form>
-              </div>
-          </div>
-      </div>
-  </div>
-</div> 
-
-
+<div
+	class="modal"
+	id="myModal"
+	tabindex="-1"
+>
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="modal-body">
+					<!-- <h5 class="modal-title">Add to playlist</h5> -->
+					<button
+						class="close"
+						data-bs-dismiss="modal"
+					>
+						&times;
+					</button>
+					<form id="playlist-form">
+						<label
+							class="form-label"
+							for="playlist"
+							>Add song to playlist:</label
+						>
+						<select
+							class="form-control"
+							name="playlist"
+							id="playlist"
+						>
+							{% for playlist in playlists %}
+							<option value="{{ playlist[0] }}">{{ playlist[1] }}</option>
+							{% endfor %}
+						</select>
+						<button
+							class="btn btn-primary"
+							id="add-track"
+							data-bs-dismiss="modal"
+							type="submit"
+						>
+							Add Track
+						</button>
+					</form>
+					<form id="create-add-playlist">
+						<label
+							class="form-label"
+							for="playlist_name"
+							>Playlist Name:</label
+						>
+						<input
+							class="form-control"
+							type="text"
+							id="name"
+							name="playlist_name"
+							required
+						/>
+						<label
+							class="form-label"
+							for="playlist_description"
+							>Playlist Description (Optional):</label
+						>
+						<input
+							class="form-control"
+							type="text"
+							id="description"
+							name="playlist_description"
+						/>
+						<button
+							class="btn btn-primary mt-2"
+							type="submit"
+							data-bs-dismiss="modal"
+							id="create-add"
+						>
+							Create Playlist
+						</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

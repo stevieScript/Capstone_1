@@ -1,63 +1,87 @@
-{% extends 'base.html'  %}
-
-{% block content %}
-
+{% extends 'base.html' %} {% block content %}
 
 <h1 class="display-1">Welcome {{ user.username }}!</h1>
 
-{% if user.playlists  %}
-<h1>Your playlists: </h1>
+{% if user.playlists %}
+<h1>Your playlists:</h1>
 {% for playlist in playlists %}
 
 <div class="card mb-2">
-    <div class="card-body d-flex">
-      <div>
-        <h5 class="card-title text-center"><a href="/user/playlists/{{playlist.id}}">{{playlist.name}}</a></h5>
-        {% if playlist.description  %}
-        <h6 class="card-subtitle text-center text-muted">{{playlist.description}}</h6>
-        {% endif %}
-      </div>
-        <div class="ml-auto align-self-center">
-          <form  action="/user/playlists/{{playlist.id}}/delete" method="POST">
-              <button type="submit" class="btn btn-danger">Delete Playlist</button>
-          </form>
-      </div>
-    </div>
+	<div class="card-body d-flex">
+		<div>
+			<h5 class="card-title text-center">
+				<a href="/user/playlists/{{playlist.id}}">{{playlist.name}}</a>
+			</h5>
+			{% if playlist.description %}
+			<h6 class="card-subtitle text-center text-muted">{{playlist.description}}</h6>
+			{% endif %}
+		</div>
+		<div class="ml-auto align-self-center">
+			<form
+				action="/user/playlists/{{playlist.id}}/delete"
+				method="POST"
+			>
+				<button
+					type="submit"
+					class="btn btn-danger"
+				>
+					Delete Playlist
+				</button>
+			</form>
+		</div>
+	</div>
 </div>
-{% endfor %}
-
-{% else %}
-<h1> You have no playlists yet! Create one below </h1>
+{% endfor %} {% else %}
+<h1>You have no playlists yet! Create one below</h1>
 {% endif %}
 <div class="card mb-2">
-  <div class="card-body">
-{% include 'music/create_playlist.html' %}
-</div>
+	<div class="card-body">{% include 'music/create_playlist.html' %}</div>
 </div>
 
 <div class="container">
-  <div class="row">
-{% for item in result %}
+	<div class="row">
+		{% for item in result %}
 
-<div class="col-6 mb-1 p-1 d-flex align-items-stretch">
-    <div class="card d-flex flex-row flex-grow-1">
-  {% if item.album_art  %}
-  
-  <img class="card-img-left" height="200px" width="200px" src="{{item.album_art}}" alt="album art" >
- 
-  {% endif %}
-  
-  <div class="card-body">
-      <p><a  href="/get_albums/{{item.artist_id}}" class="card-link">Artist: {{item.artist_name}}</a></p>
-      <p></p><a  href="/get_tracks/{{item.album_id}}" class="card-link">Album: {{item.album}}</a></p>
-      <p></p><a  href="/audio_analysis/{{item.track_id}}" class="card-link">Track: {{item.track_name}}</a></p>
-  </div>
-</div>
-</div>
-{% endfor %}
+		<div class="col-6 mb-1 p-1 d-flex align-items-stretch">
+			<div class="card d-flex flex-row flex-grow-1">
+				{% if item.album_art %}
 
-</div>
-</div>
+				<img
+					class="card-img-left"
+					width="200px"
+					src="{{item.album_art}}"
+					alt="album art"
+				/>
 
+				{% endif %}
+
+				<div class="card-body">
+					<p>
+						<a
+							href="/get_albums/{{item.artist_id}}"
+							class="card-link"
+							>Artist: {{item.artist_name}}</a
+						>
+					</p>
+					<p>
+						<a
+							href="/get_tracks/{{item.album_id}}"
+							class="card-link"
+							>Album: {{item.album}}</a
+						>
+					</p>
+					<p>
+						<a
+							href="/audio_analysis/{{item.track_id}}"
+							class="card-link"
+							>Track: {{item.track_name}}</a
+						>
+					</p>
+				</div>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+</div>
 
 {% endblock %}

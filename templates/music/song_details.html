@@ -1,33 +1,48 @@
-{% extends 'base.html'  %}
+{% extends 'base.html' %} {% block content %}
 
-{% block content %}
+<h1>
+	Analysis for: <br />
+	{{song.track_name}}
+</h1>
 
-<h1>Analysis for: <br> {{song.track_name}} </h1>
+<div class="card d-flex flex-row">
+	<img
+		class="align-self-stretch img-thumbnail"
+		src="{{song.album_art}}"
+		alt="album art"
+		width="400px"
+	/>
+	<div class="card-body text-center">
+		<ul class="list-unstyled">
+			<li class="card-text lead">
+				<a href="/get_albums/{{song.artist_id}}">Artist: {{song.artist_name}}</a>
+			</li>
+			<li class="card-text">
+				<a href="/get_tracks/{{song.album_id}}">Album: {{song.album}}</a>
+			</li>
+			<li class="card-text">Duration in minutes: {{song.duration}}</li>
+			<li class="card-text">Key signature: {{song.key}}</li>
+			<li class="card-text">Key signature confidence: {{song.key_confidence}}%</li>
+			<li class="card-text">Mode: {{song.mode}}</li>
+			<li class="card-text">Mode confidence: {{song.mode_confidence}}%</li>
+			<li class="card-text">Time signature: {{song.time_signature}}/4</li>
+			<li class="card-text">Time signature confidence: {{song.time_signature_confidence}}%</li>
+			<li class="card-text">Tempo/BPM: {{song.tempo}}</li>
+			<li class="card-text">Tempo confidence: {{song.tempo_confidence}}%</li>
+			<li class="card-text">Loudness: {{song.loudness}}</li>
+		</ul>
+		<form
+			action="/user/playlists/{{playlist.id}}/{{song.id}}/delete"
+			method="POST"
+		>
+			<button
+				type="submit"
+				class="btn btn-danger"
+			>
+				Delete
+			</button>
+		</form>
+	</div>
 
-<div class="card">
-    <img class="img-thumbnail img-fluid align-self-center" src="{{song.album_art}}" alt="album art" >
-    <div class="card-body text-center">
-    <ul class="list-unstyled">
-        <li class="card-text">Artist: {{song.artist_name}}</li>
-        <li class="card-text">Album: {{song.album}}</li>
-        <li class="card-text" >Duration in minutes: {{song.duration}}</li>
-        <li class="card-text" >Key signature: {{song.key}}</li>
-        <li class="card-text" >Key signature confidence: {{song.key_confidence}}%</li>
-        <li class="card-text" >Mode: {{song.mode}}</li>
-        <li class="card-text" >Mode confidence: {{song.mode_confidence}}%</li>
-        <li class="card-text" >Time signature: {{song.time_signature}}/4</li>
-        <li class="card-text" >Time signature confidence: {{song.time_signature_confidence}}%</li>
-        <li class="card-text">Tempo/BPM: {{song.tempo}}</li>
-        <li class="card-text">Tempo confidence: {{song.tempo_confidence}}%</li>
-        <li class="card-text">Loudness: {{song.loudness}}</li>
-    </ul>
-    <form action="/user/playlists/{{playlist.id}}/{{song.id}}/delete" method="POST">
-        <button type="submit" class="btn btn-danger">Delete</button>
-    </form>
+	{% endblock %}
 </div>
-
-
-
-
-
-{% endblock %}
