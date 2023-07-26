@@ -1,5 +1,4 @@
 $(document).ready(function () {
-	console.log('DOM loaded');
 	const myModalElement = $('#myModal');
 	const playlistForm = $('#playlist-form');
 	const search = $('#search');
@@ -10,12 +9,10 @@ $(document).ready(function () {
 	myModalElement.on('shown.bs.modal', function (e) {
 		const button = $(e.relatedTarget);
 		currentTrackId = button.data('track-id');
-		console.log(currentTrackId);
 	});
 
 	playlistForm.on('submit', async function (e) {
 		e.preventDefault();
-		console.log('Adding track to playlist');
 		const playlist_id = $('#playlist').val();
 
 		if (!currentTrackId) {
@@ -27,7 +24,6 @@ $(document).ready(function () {
 			track_id: currentTrackId,
 			playlist_id: playlist_id,
 		});
-		console.log(res.data);
 	});
 
 	search.on('submit', function (e) {
@@ -36,7 +32,6 @@ $(document).ready(function () {
 
 	createPlaylistForm.on('submit', async function (e) {
 		e.preventDefault();
-		console.log('Creating playlist');
 		const playlistName = $('#name').val();
 		const playlistDescription = $('#description').val();
 
@@ -46,10 +41,12 @@ $(document).ready(function () {
 			track_id: currentTrackId,
 		};
 
-		console.log('Sending data:', dataToSend);
-
 		const response = await axios.post('/user/playlists/add', dataToSend);
-		// debugger;
-		console.log(response.data);
+		if (response.status === 200) {
+			//append the newly created playlist to the dropdown
+			let newPlaylistOption = $('<option></option>').val(response.data.id).text(response.data.name);
+			playlistSelect.append(newPlaylistOption);
+		}
 	});
 });
+

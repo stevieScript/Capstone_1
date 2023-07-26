@@ -1,31 +1,26 @@
-{% extends 'base.html'  %}
-
-{% block content %}
+{% extends 'base.html' %} {% block content %}
 
 <h1>{{playlist.name}}</h1>
 
-{% if playlist.songs  %}
-{% for song in playlist.songs %}
-
+{% if playlist.songs %} {% for song in playlist.songs %}
 <div class="card mb-1">
-    <div class="card-body d-flex">
-        <div>
-            <h5 class="card-title"><a href="/user/playlists/{{playlist.id}}/{{song.track_id}}">{{song.track_name}}</a></h5>
-            <h6 class="card-subtitle mb-2 text-muted align-self-end">{{song.artist_name}} </h6>
-        </div>
-        <div class="ml-auto align-self-center ">
-            <form  action="/user/playlists/{{playlist.id}}/{{song.id}}/delete" method="POST">
-                <button type="submit" class="btn btn-danger">Delete Song</button>
-            </form>
-        </div>
-    </div>
+	<div class="card-body d-flex">
+		<div>
+			<h5 class="card-title">
+				<a href="/user/playlists/{{playlist.id}}/{{song.track_id}}">{{song.track_name}}</a>
+			</h5>
+			<h6 class="card-subtitle mb-2 text-muted align-self-end">{{song.artist_name}}</h6>
+		</div>
+		<div class="ml-auto align-self-center">
+			<form action="/user/playlists/{{playlist.id}}/{{song.id}}/delete" method="POST">
+				<button type="submit" class="btn btn-danger">Delete Song</button>
+			</form>
+		</div>
+	</div>
 </div>
+{% endfor %} {% else %}
 
+<h2>You have no songs in this playlist yet! Search for songs to add</h2>
 
+{% endif %} {%endblock%}
 
-{% endfor %}
-{% else %}
-<h2> You have no songs in this playlist yet! Search for songs to add </h2>
-{% endif %}
-
-{%endblock%}

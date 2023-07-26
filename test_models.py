@@ -5,13 +5,9 @@ from flask_bcrypt import Bcrypt
 from models import db, User, Playlist, Song, PlaylistSong
 bcrypt = Bcrypt()
 
-
-
 os.environ['DATABASE_URL'] = "postgresql:///maestro-test"
 
 from app import app
-
-
 
 db.drop_all()
 db.create_all()
@@ -32,11 +28,6 @@ class UserModelTestCase(TestCase):
         db.session.commit()
         self.u = u
 
-    # def tearDown(self):
-    #     """Clean up fouled transactions."""
-
-    #     db.session.rollback()
-
     def test_user_model(self):
         """Does basic model work?"""
 
@@ -48,13 +39,10 @@ class UserModelTestCase(TestCase):
 
         db.session.add(u)
         db.session.commit()
-
         # User should exist in database
         self.assertEqual(len(User.query.all()), 2)
         self.assertEqual(u.username, "testuser1")
         self.assertEqual(u.email, "none@none1.com")
-        
-
         db.session.rollback()
 
 
@@ -67,23 +55,15 @@ class UserModelTestCase(TestCase):
         self.assertEqual(u.email, "none1@none.com")
         # Bcrypt strings should start with $2b$
         self.assertTrue(u.password.startswith("$2b$"))
-
         db.session.rollback()
 
     def test_user_authenticate(self):
         """Does authenticate work?"""
         u = User.authenticate(username="testuser", password="testpassword")
-
-
         self.assertEqual(u.username, "testuser")
-
         self.assertFalse(User.authenticate(username="testuser", password="wrongpassword"))
-
         self.assertFalse(User.authenticate(username="wronguser", password="testpassword"))
-
         db.session.rollback()
-        
-
 
     def test_playlist_model(self):
             """Does basic model work?"""
@@ -92,10 +72,8 @@ class UserModelTestCase(TestCase):
                 name="testplaylist",
                 user_id=self.u.id
             )
-    
             db.session.add(p)
             db.session.commit()
-    
                 # Playlist should exist in database
             self.assertEqual(len(Playlist.query.all()), 1)
             self.assertEqual(p.name, "testplaylist")
@@ -108,16 +86,13 @@ class UserModelTestCase(TestCase):
         """Does create_playlist work?"""
         p = Playlist.create_playlist(name="testplaylist", description="testdescription", user_id=self.u.id)
         db.session.commit()
-        
         self.assertEqual(p.name, "testplaylist")
         self.assertEqual(p.description, "testdescription")
         self.assertEqual(p.user_id, self.u.id)
-
         db.session.rollback()
         
     def test_playlist_song_model(self):
         """Does basic model work?"""
-
         s = Song(
             track_id="testtrackid",
             track_name="testsong",
@@ -125,27 +100,21 @@ class UserModelTestCase(TestCase):
             artist_name="testartist",
             artist_id="testartistid",
         )
-
         db.session.add(s)
         db.session.commit()
-
         p = Playlist(
             name="testplaylist",
             user_id=self.u.id
         )
-
         db.session.add(p)
         db.session.commit()
-
         ps = PlaylistSong(
             playlist_id=p.id,
             song_id=s.id,
             user_id=self.u.id,
         )
-
         db.session.add(ps)
         db.session.commit()
-
         # PlaylistSong should exist in database
         self.assertEqual(len(PlaylistSong.query.all()), 1)
         self.assertEqual(ps.playlist_id, p.id)

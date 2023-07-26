@@ -4,21 +4,15 @@ from flask_sqlalchemy import SQLAlchemy
 bcrypt = Bcrypt()
 db = SQLAlchemy()
 
-# db.drop_all()
-# db.create_all()
 class User(db.Model):
     """User in the system."""
 
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True,)
-
     username = db.Column(db.Text, nullable=False, unique=True,)
-
     password = db.Column(db.Text, nullable=False,)
-
     email = db.Column(db.Text, nullable=False, unique=True,)
-    
     playlists = db.relationship('Playlist', backref='user')
 
     def __repr__(self):
@@ -39,7 +33,6 @@ class User(db.Model):
         Return user if valid; else return False.
         """
         u = User.query.filter_by(username=username).first()
-        
         if u and bcrypt.check_password_hash(u.password, password):
             # return user instance
             return u
@@ -49,17 +42,11 @@ class Playlist(db.Model):
     """Playlist in the system."""
 
     __tablename__ = "playlists"
-
     id = db.Column(db.Integer, primary_key=True, autoincrement=True,)
-
     name = db.Column(db.Text, nullable=False,)
-
     description = db.Column(db.String(140))
-
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'),nullable=False)
-
     songs = db.relationship('Song', secondary='playlist_songs', backref='songs')
-
     playlist_songs = db.relationship('PlaylistSong', backref='playlist', cascade="all, delete" )
 
     def __repr__(self):
@@ -75,39 +62,22 @@ class Song(db.Model):
     __tablename__ = "songs"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True,)
-
     track_id = db.Column(db.Text, nullable=False, unique=True,)
-
     track_name = db.Column(db.Text, nullable=False,)
-
     track_uri = db.Column(db.Text, nullable=False, unique=True,)
-
     artist_name = db.Column(db.Text, nullable=False)
-
     artist_id = db.Column(db.Text, nullable=False)
-
     album = db.Column(db.Text)
-
     album_art = db.Column(db.Text)
-
     tempo = db.Column(db.Float)
-
     tempo_confidence = db.Column(db.Integer)
-
     time_signature = db.Column(db.Integer)
-
     time_signature_confidence = db.Column(db.Integer)
-
     key = db.Column(db.Text)
-
     key_confidence = db.Column(db.Integer)
-
     mode = db.Column(db.Text)
-
     mode_confidence = db.Column(db.Integer)
-
     duration = db.Column(db.Integer)
-
     loudness = db.Column(db.Float)
 
     def __repr__(self):
@@ -125,7 +95,6 @@ class Song(db.Model):
     def get_song(cls, song_id):
         """Get song from database."""
         song = Song.query.filter_by(track_id=song_id).first()
-
         if song:
             return song
         else:
@@ -136,13 +105,9 @@ class PlaylistSong(db.Model):
     __tablename__ = "playlist_songs"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-
     playlist_id = db.Column(db.Integer, db.ForeignKey('playlists.id'))
-
     song_id = db.Column(db.Integer, db.ForeignKey('songs.id'))
-
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-
     song = db.relationship('Song', backref='playlist_songs')
 
     @classmethod

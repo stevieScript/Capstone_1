@@ -1,32 +1,35 @@
-{% extends 'base.html'  %}
+{% extends 'base.html' %} {% block content %}
 
-
-{% block content %}
 <h1>Albums by {{result[0]['artist_name']}}</h1>
 
 <div class="container">
-    <div class="row">
-        {% for item in result %}
-            <div class="col-6 mb-1 p-1 d-flex align-items-stretch">
-                <div class="card d-flex flex-row flex-grow-1">
-                    <!-- add album image if it exists in item.album_art -->
-                    {% if item.album_art %}
-                        <img src="{{item.album_art}}" alt="album art" class="img-thumbnail"  style="height: auto; width: 200px;">
-                    {% endif %}
-                   
-                    <div class="card-body">
-                        <p><a href="/get_tracks/{{item.album_id}}" class="card-link">Album: {{item.album_name }}</a></p>
-                        <p class="card-text">Release date: {{item.release_date}}</p>
-                        <p class="card-text">Tracks: {{item.total_tracks}}</p>
-                        <p class="card-text">Popularity: {{item.popularity}}</p>
-                    </div>
-                </div>
-            </div>
-        {% endfor %}
-    </div>
+	<div class="row">
+		{% for item in result %}
+		<div class="col-6 mb-1 p-1 d-flex align-items-stretch">
+			<div class="card d-flex flex-row flex-grow-1">
+				<!-- add album image if it exists in item.album_art -->
+				{% if item.album_art %}
+				<img
+					src="{{item.album_art}}"
+					alt="album art"
+					class="img-thumbnail"
+					style="height: auto; width: 200px" />
+				{% endif %}
+
+				<div class="card-body">
+					<p>
+						<a href="/get_tracks/{{item.album_id}}" class="card-link"
+							>Album: {{item.album_name }}</a
+						>
+					</p>
+					<p class="card-text">Release date: {{item.release_date}}</p>
+					<p class="card-text">Tracks: {{item.total_tracks}}</p>
+					<p class="card-text">Popularity: {{item.popularity}}</p>
+				</div>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
 </div>
-
-
-
 {% endblock %}
 

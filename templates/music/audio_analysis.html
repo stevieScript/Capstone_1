@@ -1,35 +1,40 @@
-{% extends 'base.html'  %}
-{% include 'music/playlist_form.html' %}
-
-{% block content %}
-
+{% extends 'base.html' %} {% include 'music/playlist_form.html' %} {% block content %}
 
 <h1>Analysis for: <b> {{result.track_name}} </b></h1>
 
 <div class="card d-flex flex-row">
-    <img class="align-self-stretch img-thumbnail" src="{{result.album_art}}" alt="album art" width="400px">
-    <div class="card-body text-center">
-    <ul class="list-unstyled">
-        <li class="card-text lead"><a href="/get_albums/{{result.artist_id}}">Artist: {{result.artist_name}}</a></li>
-        <li class="card-text"><a href="/get_tracks/{{result.album_id}}">Album: {{result.album}}</a></li>
-        <li class="card-text" >Duration in minutes: {{result.duration}}</li>
-        <li class="card-text" >Key signature: {{result.key}}</li>
-        <li class="card-text" >Key signature confidence: {{result.key_confidence}}%</li>
-        <li class="card-text" >Mode: {{result.mode}}</li>
-        <li class="card-text" >Mode confidence: {{result.mode_confidence}}%</li>
-        <li class="card-text" >Time signature: {{result.time_signature}}/4</li>
-        <li class="card-text" >Time signature confidence: {{result.time_signature_confidence}}%</li>
-        <li class="card-text">Tempo/BPM: {{result.tempo}}</li>
-        <li class="card-text">Tempo confidence: {{result.tempo_confidence}}%</li>
-        <li class="card-text">Loudness: {{result.loudness}}</li>
-    </ul>
-
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal" data-track-id="{{result.track_id}}">Add to playlist</button>
+	<img
+		class="align-self-stretch img-thumbnail"
+		src="{{result.album_art}}"
+		alt="album art"
+		width="400px" />
+	<div class="card-body text-center">
+		<ul class="list-unstyled">
+			<li class="card-text lead">
+				<a href="/get_albums/{{result.artist_id}}">Artist: {{result.artist_name}}</a>
+			</li>
+			<li class="card-text">
+				<a href="/get_tracks/{{result.album_id}}">Album: {{result.album}}</a>
+			</li>
+			<li class="card-text">Duration in minutes: {{result.duration}}</li>
+			<li class="card-text">Key signature: {{result.key}}</li>
+			<li class="card-text">Key signature confidence: {{result.key_confidence}}%</li>
+			<li class="card-text">Mode: {{result.mode}}</li>
+			<li class="card-text">Mode confidence: {{result.mode_confidence}}%</li>
+			<li class="card-text">Time signature: {{result.time_signature}}/4</li>
+			<li class="card-text">Time signature confidence: {{result.time_signature_confidence}}%</li>
+			<li class="card-text">Tempo/BPM: {{result.tempo}}</li>
+			<li class="card-text">Tempo confidence: {{result.tempo_confidence}}%</li>
+			<li class="card-text">Loudness: {{result.loudness}}</li>
+		</ul>
+		<button
+			class="btn btn-primary"
+			data-bs-toggle="modal"
+			data-bs-target="#myModal"
+			data-track-id="{{result.track_id}}">
+			Add to playlist
+		</button>
+	</div>
+	{% endblock %}
 </div>
-
-
-
-
-
-{% endblock %}
 
