@@ -45,16 +45,15 @@
 				</ul>
 			</div>
 		</nav>
-
 		<div class="container" style="margin-top: 2em">
 			{% for category, msg in get_flashed_messages(with_categories=True) %}
 			<div class="alert alert-{{category}}">{{ msg }}</div>
 			{% endfor %} {%block content%}
 			<h1>Greetings!</h1>
 			<p>
-				Welcome to Maestro. An app for getting audio analysis and information for your favorite
-				songs. Create an account or log in to get started. You can search for songs by track name,
-				artist or album to get a detailed breakdown of the song and add them to playlists. You can
+				Welcome to Maestro, an app for getting audio analysis information for your favorite songs.
+				Create an account or log in to get started. You can search for songs by track name, artist
+				or album to get a detailed breakdown of the song. Make playlists of your favorites.You can
 				also edit your profile and view your playlists. This app does not access actual music as
 				that would require your real spotify login. Enjoy!
 			</p>
