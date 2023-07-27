@@ -1,5 +1,6 @@
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 bcrypt = Bcrypt()
 db = SQLAlchemy()
@@ -38,6 +39,10 @@ class User(db.Model):
             return u
         else:
             return False
+        
+    def is_liked(self, track_id):
+        like = Like.query.filter_by(user_id=self.id, song_id=track_id).first()
+        return like is not None
 class Playlist(db.Model):
     """Playlist in the system."""
 
@@ -62,7 +67,7 @@ class Song(db.Model):
     __tablename__ = "songs"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True,)
-    track_id = db.Column(db.Text, nullable=False, unique=True,)
+    track_id = db.Column(db.Text, nullable=False, unique=True)
     track_name = db.Column(db.Text, nullable=False,)
     track_uri = db.Column(db.Text, nullable=False, unique=True,)
     artist_name = db.Column(db.Text, nullable=False)
@@ -114,6 +119,39 @@ class PlaylistSong(db.Model):
     def create_playlist_song(cls, playlist_id, song_id, user_id):
         """Create playlist_song and return playlist_song."""
         return cls(playlist_id=playlist_id, song_id=song_id, user_id=user_id)
+    
+class Like(db.Model):
+    """Like in the system."""
+
+    __tablename__ = "likes"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True,)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    song_id = db.Column(db.Text, db.ForeignKey('songs.track_id'), nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User', backref='likes')
+    song = db.relationship('Song', backref='likes')
+
+    def __repr__(self):
+        return f'<Like {self.id} user={self.user_id} song={self.song_id}>'
+
+    @classmethod
+    def like_song(cls, user_id, track_id):
+        """Create like and return like."""
+        like = cls(user_id=user_id, song_id=track_id)
+        db.session.add(like)
+        return like
+
+    @classmethod
+    def unlike_song(cls, user_id, track_id):
+        """Remove a like."""
+        like = cls.query.filter_by(user_id=user_id, song_id=track_id).first()
+        if like:
+            db.session.delete(like)
+
+   
+
 
 def connect_db(app):
     """Connect this database to provided Flask app.

@@ -1,12 +1,25 @@
 {% extends 'base.html' %} {% block content %} {% with playlists=playlists %} {% include
 'music/playlist_form.html'%} {% endwith %}
 
-<h3>Track listing for: {{result[0].album_name}}</h3>
+<h2>Track listing for: {{result[0].album_name}}</h2>
 <div class="container">
 	<div class="row">
 		{% for item in result %}
 		<div class="col-6 mb-1 p-1 d-flex align-items-stretch">
-			<div class="card d-flex flex-row flex-grow-1">
+			<div class="card d-flex flex-row flex-grow-1 position-relative">
+				{% if g.user.is_liked(item.track_id)%}
+				<i
+					id="like-icon-{{item.track_id}}"
+					data-track-id="{{item.track_id}}"
+					class="fas fa-heart fa-solid position-absolute top-0 end-0 m-2"
+					style="font-size: 1em"></i>
+				{% else %}
+				<i
+					id="like-icon-{{item.track_id}}"
+					data-track-id="{{item.track_id}}"
+					class="far fa-heart fa-light position-absolute top-0 end-0 m-2"
+					style="font-size: 1em"></i>
+				{% endif %}
 				<div class="card-body">
 					<p>
 						<a href="/audio_analysis/{{item.track_id}}" class="card-link"

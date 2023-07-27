@@ -1,9 +1,9 @@
 {% extends 'base.html' %} {% block content %}
 
-<h1 class="display-1">Welcome {{ user.username }}!</h1>
+<h3 class="display-4">Welcome {{ user.username }}!</h3>
 
 {% if user.playlists %}
-<h1>Your playlists:</h1>
+<h3>Your playlists:</h3>
 {% for playlist in playlists %}
 
 <div class="card mb-2">
@@ -17,63 +17,37 @@
 			{% endif %}
 		</div>
 		<div class="ml-auto align-self-center">
-			<form
-				action="/user/playlists/{{playlist.id}}/delete"
-				method="POST"
-			>
-				<button
-					type="submit"
-					class="btn btn-danger"
-				>
-					Delete Playlist
-				</button>
+			<form action="/user/playlists/{{playlist.id}}/delete" method="POST">
+				<button type="submit" class="btn btn-danger">Delete Playlist</button>
 			</form>
 		</div>
 	</div>
 </div>
 {% endfor %} {% else %}
-<h1>You have no playlists yet! Create one below</h1>
+<h3>You have no playlists yet! Create one below</h3>
 {% endif %}
 <div class="card mb-2">
 	<div class="card-body">{% include 'music/create_playlist.html' %}</div>
 </div>
-
 <div class="container">
 	<div class="row">
 		{% for item in result %}
-
 		<div class="col-6 mb-1 p-1 d-flex align-items-stretch">
 			<div class="card d-flex flex-row flex-grow-1">
 				{% if item.album_art %}
-
-				<img
-					class="card-img-left"
-					width="200px"
-					src="{{item.album_art}}"
-					alt="album art"
-				/>
-
+				<img class="card-img-left" width="200px" src="{{item.album_art}}" alt="album art" />
 				{% endif %}
-
 				<div class="card-body">
 					<p>
-						<a
-							href="/get_albums/{{item.artist_id}}"
-							class="card-link"
+						<a href="/get_albums/{{item.artist_id}}" class="card-link"
 							>Artist: {{item.artist_name}}</a
 						>
 					</p>
 					<p>
-						<a
-							href="/get_tracks/{{item.album_id}}"
-							class="card-link"
-							>Album: {{item.album}}</a
-						>
+						<a href="/get_tracks/{{item.album_id}}" class="card-link">Album: {{item.album}}</a>
 					</p>
 					<p>
-						<a
-							href="/audio_analysis/{{item.track_id}}"
-							class="card-link"
+						<a href="/audio_analysis/{{item.track_id}}" class="card-link"
 							>Track: {{item.track_name}}</a
 						>
 					</p>
@@ -83,5 +57,5 @@
 		{% endfor %}
 	</div>
 </div>
-
 {% endblock %}
+

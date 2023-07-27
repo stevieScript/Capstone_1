@@ -6,6 +6,31 @@ $(document).ready(function () {
 
 	let currentTrackId = null;
 
+	$('[id^="like-icon-"]').on('click', async function (e) {
+		e.preventDefault();
+
+		const song_id = $(this).data('track-id');
+		const icon = $(this);
+
+		if (!song_id) {
+			console.error('No song ID found');
+			return;
+		}
+
+		let response;
+		if ($(this).hasClass('far')) {
+			response = await axios.post(`/songs/${song_id}/like`);
+			if (response.status === 200) {
+				icon.removeClass('far').addClass('fas');
+			}
+		} else {
+			response = await axios.post(`/songs/${song_id}/unlike`);
+			if (response.status === 200) {
+				icon.removeClass('fas').addClass('far');
+			}
+		}
+	});
+
 	myModalElement.on('shown.bs.modal', function (e) {
 		const button = $(e.relatedTarget);
 		currentTrackId = button.data('track-id');

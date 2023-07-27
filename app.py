@@ -1,4 +1,4 @@
-from flask import Flask, render_template, flash, redirect, request, session, g
+from flask import Flask, render_template, flash, redirect, request, session, g, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
@@ -19,7 +19,7 @@ from forms import (
     PlaylistForm,
     EditUserForm,
 )
-from models import db, connect_db, User, Song, Playlist, PlaylistSong
+from models import db, connect_db, User, Song, Playlist, PlaylistSong, Like
 
 import os, json
 
@@ -363,6 +363,51 @@ def delete_song(playlist_id, song_id):
     db.session.commit()
     flash("Song deleted from playlist.", "success")
     return redirect(f"/user/playlists/{playlist_id}")
+
+@app.route("/songs/<track_id>/like", methods=["POST"])
+def like_song(track_id):
+    """Like a song."""
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    
+    user = User.query.get_or_404(session[CURR_USER_KEY])
+    song = Song.query.filter_by(track_id=track_id).first()
+
+    if not song:
+        token = get_token()
+        result = get_audio_analysis(track_id, token)
+        song = Song.create_song(result)
+        db.session.add(song)
+        db.session.commit()
+
+    like = Like.like_song(user.id, song.track_id)
+    db.session.commit()
+    
+    return jsonify(message="Song liked!"), 200
+
+@app.route("/songs/<track_id>/unlike", methods=["POST"])
+def unlike_song(track_id):
+    """Unlike a song."""
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    
+    user = User.query.get_or_404(session[CURR_USER_KEY])
+    song = Song.query.filter_by(track_id=track_id).first()
+
+    if not song:
+        token = get_token()
+        result = get_audio_analysis(track_id, token)
+        song = Song.create_song(result)
+        db.session.add(song)
+        db.session.commit()
+
+    Like.unlike_song(user.id, song.track_id)
+    db.session.commit()
+    
+    return jsonify(message="Song unliked!"), 200
+
 
 @app.after_request
 def add_header(req):
