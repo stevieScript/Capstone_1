@@ -14,9 +14,6 @@ from helper_functions import (
 from forms import (
     SignUpForm,
     LoginForm,
-    SpotifySearchForm,
-    AddTrackForm,
-    PlaylistForm,
     EditUserForm,
 )
 from models import db, connect_db, User, Song, Playlist, PlaylistSong, Like
@@ -124,7 +121,6 @@ def user_profile():
     playlists = Playlist.query.filter(Playlist.user_id == user.id).all()
     token = get_token()
     result = get_pop_recommendations(token)
-    print(result)
     return render_template(
         "/user/user.html", user=user, playlists=playlists, result=result)
 
@@ -178,7 +174,6 @@ def show_playlists():
         data = request.get_json()
         playlist_name = request.form.get("playlist_name")
         playlist_description = request.form.get("playlist_description")
-        print(f"data: {playlist_name}, {playlist_description}")
         if playlist_name:
             playlist = Playlist(
                 name=playlist_name, user_id=user.id, description=playlist_description)
@@ -307,8 +302,6 @@ def audio_analysis(track_id):
     if request.method == "POST":
         data = request.get_json()
         playlist_id = data.get("playlist_id")
-        print(playlist_id)
-        print(track_id)
         if Song.query.filter(Song.track_id == track_id).first():
             song = Song.query.filter(Song.track_id == track_id).first()
         else:
