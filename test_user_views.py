@@ -76,14 +76,14 @@ class UserViewTestCase(TestCase):
             self.assertEqual(resp.status_code, 200)
             self.assertIn('Search', str(resp.data))
 
-    def test_audio_analysis(self):
+    def test_song_details(self):
         """Does audio analysis page work?"""
 
         with self.client as c:
             with c.session_transaction() as sess:
                 sess[CURR_USER_KEY] = self.u.id
 
-            resp = c.get(f"/audio_analysis/{self.u.id}/{self.track_id}")
+            resp = c.get(f"/songs/{self.u.id}/{self.track_id}")
 
             self.assertEqual(resp.status_code, 200)
             self.assertIn('Analysis', str(resp.data))
@@ -95,7 +95,7 @@ class UserViewTestCase(TestCase):
             with c.session_transaction() as sess:
                 sess[CURR_USER_KEY] = self.u.id
 
-            resp = c.get(f"/audio_analysis/{self.u.id}/{self.track_id}")
+            resp = c.get(f"/songs/{self.u.id}/{self.track_id}")
 
             self.assertEqual(resp.status_code, 200)
             self.assertIn('Add song', str(resp.data))
@@ -112,7 +112,7 @@ class UserViewTestCase(TestCase):
             self.assertEqual(resp.status_code, 200)
             self.assertIn('Create Playlist', str(resp.data))
 
-    def test_get_tracks(self):
+    def test_get_songs(self):
         """Does get tracks page work?"""
 
         with self.client as c:
@@ -177,7 +177,7 @@ class UserViewTestCase(TestCase):
             with c.session_transaction() as sess:
                 sess[CURR_USER_KEY] = self.u.id
 
-            resp = c.get(f"/logout", follow_redirects=True)
+            resp = c.get(f"/user/logout", follow_redirects=True)
 
             self.assertEqual(resp.status_code, 200)
             self.assertIn('Login', str(resp.data))

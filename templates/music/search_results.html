@@ -16,12 +16,12 @@
 					class="img-thumbnail img-fluid" />
 				{% endif %}
 				<div class="card-body">
-					<p><a href="/audio_analysis/{{item.id}}" class="card-link">Name: {{ item.name }}</a></p>
+					<p><a href="/songs/{{item.id}}" class="card-link">Name: {{ item.name }}</a></p>
 					<p>
-						<a href="/get_albums/{{item.artist_id}}" class="card-link">Artist: {{ item.artist }}</a>
+						<a href="/albums/{{item.artist_id}}" class="card-link">Artist: {{ item.artist }}</a>
 					</p>
 					<p>
-						<a href="/get_tracks/{{item.album_id}}" class="card-link">Album: {{ item.album }}</a>
+						<a href="/albums/songs/{{item.album_id}}" class="card-link">Album: {{ item.album }}</a>
 					</p>
 				</div>
 			</div>
@@ -40,7 +40,7 @@
 
 				<div class="card-body">
 					<p>Artist: {{ item.name }}</p>
-					<a href="/get_albums/{{item.id}}" class="card-link">Get more albums from {{item.name}}</a>
+					<a href="/albums/{{item.id}}" class="card-link">Get more albums from {{item.name}}</a>
 				</div>
 			</div>
 		</div>
@@ -57,10 +57,10 @@
 					width="200px" />
 				{% endif %}
 				<div class="card-body">
-					<p><a href="/get_tracks/{{item.id}}">Album: {{ item.name }}</a></p>
-					<p><a href="/get_albums/{{item.artist}}">Artist: {{ item.artist }}</a></p>
+					<p><a href="/albums/songs/{{item.id}}">Album: {{ item.name }}</a></p>
+					<p><a href="/albums/{{item.artist}}">Artist: {{ item.artist }}</a></p>
 					<p>
-						<a href="/get_tracks/{{item.id}}" class="card-link d-block"
+						<a href="/albums/songs/{{item.id}}" class="card-link d-block"
 							>Track list: {{item.name}}</a
 						>
 					</p>

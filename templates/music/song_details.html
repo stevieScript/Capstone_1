@@ -14,10 +14,10 @@
 	<div class="card-body text-center">
 		<ul class="list-unstyled">
 			<li class="card-text lead">
-				<a href="/get_albums/{{song.artist_id}}">Artist: {{song.artist_name}}</a>
+				<a href="/albums/{{song.artist_id}}">Artist: {{song.artist_name}}</a>
 			</li>
 			<li class="card-text">
-				<a href="/get_tracks/{{song.album_id}}">Album: {{song.album}}</a>
+				<a href="/albums/songs/{{song.album_id}}">Album: {{song.album}}</a>
 			</li>
 			<li class="card-text">Duration in minutes: {{song.duration}}</li>
 			<li class="card-text">Key signature: {{song.key}}</li>
@@ -30,7 +30,7 @@
 			<li class="card-text">Tempo confidence: {{song.tempo_confidence}}%</li>
 			<li class="card-text">Loudness: {{song.loudness}}</li>
 		</ul>
-		<form action="/user/playlists/{{playlist.id}}/{{song.id}}/delete" method="POST">
+		<form action="/playlists/{{playlist.id}}/{{song.id}}/delete" method="POST">
 			<button type="submit" class="btn btn-danger">Delete</button>
 		</form>
 	</div>

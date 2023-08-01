@@ -11,7 +11,6 @@ $(document).ready(function () {
 
 		const song_id = $(this).data('track-id');
 		const icon = $(this);
-
 		if (!song_id) {
 			console.error('No song ID found');
 			return;
@@ -45,7 +44,7 @@ $(document).ready(function () {
 			return;
 		}
 
-		const res = await axios.post(`/audio_analysis/${currentTrackId}`, {
+		const res = await axios.post(`/songs/${currentTrackId}`, {
 			track_id: currentTrackId,
 			playlist_id: playlist_id,
 		});
@@ -56,22 +55,18 @@ $(document).ready(function () {
 	});
 
 	createPlaylistForm.on('submit', async function (e) {
-		e.preventDefault();
+		// e.preventDefault();
 		const playlistName = $('#name').val();
 		const playlistDescription = $('#description').val();
 
 		const dataToSend = {
 			playlist_name: playlistName,
 			playlist_description: playlistDescription,
-			track_id: currentTrackId,
 		};
-
-		const response = await axios.post('/user/playlists/add', dataToSend);
-		if (response.status === 200) {
-			//append the newly created playlist to the dropdown
-			let newPlaylistOption = $('<option></option>').val(response.data.id).text(response.data.name);
-			playlistSelect.append(newPlaylistOption);
+		if (currentTrackId) {
+			dataToSend.track_id = currentTrackId;
 		}
+		const response = await axios.post('/playlists/add', dataToSend);
 	});
 });
 

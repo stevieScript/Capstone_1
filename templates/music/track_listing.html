@@ -1,7 +1,6 @@
 {% extends 'base.html' %} {% block content %} {% with playlists=playlists %} {% include
 'music/playlist_form.html'%} {% endwith %}
 
-<h2>Track listing for: {{result[0].album_name}}</h2>
 <div class="container">
 	<div class="row">
 		{% for item in result %}
@@ -22,7 +21,7 @@
 				{% endif %}
 				<div class="card-body">
 					<p>
-						<a href="/audio_analysis/{{item.track_id}}" class="card-link"
+						<a href="/songs/{{item.track_id}}" class="card-link"
 							>Track Name: {{ item.track_name }}</a
 						>
 					</p>

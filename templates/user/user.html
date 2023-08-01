@@ -10,14 +10,14 @@
 	<div class="card-body d-flex">
 		<div>
 			<h5 class="card-title text-center">
-				<a href="/user/playlists/{{playlist.id}}">{{playlist.name}}</a>
+				<a href="/playlists/{{playlist.id}}">{{playlist.name}}</a>
 			</h5>
 			{% if playlist.description %}
 			<h6 class="card-subtitle text-center text-muted">{{playlist.description}}</h6>
 			{% endif %}
 		</div>
 		<div class="ml-auto align-self-center">
-			<form action="/user/playlists/{{playlist.id}}/delete" method="POST">
+			<form action="/playlists/{{playlist.id}}/delete" method="POST">
 				<button type="submit" class="btn btn-danger">Delete Playlist</button>
 			</form>
 		</div>
@@ -27,10 +27,21 @@
 <h3>You have no playlists yet! Create one below</h3>
 {% endif %}
 <div class="card mb-2">
-	<div class="card-body">{% include 'music/create_playlist.html' %}</div>
+	<div class="card-body">
+		<form id="create-add-playlist">
+			<label class="form-label" for="playlist_name">Playlist Name:</label>
+			<input class="form-control" type="text" id="name" name="playlist_name" required />
+			<label class="form-label" for="playlist_description">Playlist Description (Optional):</label>
+			<input class="form-control" type="text" id="description" name="playlist_description" />
+			<button class="btn btn-primary mt-2" type="submit" data-bs-dismiss="modal" id="create-add">
+				Create Playlist
+			</button>
+		</form>
+	</div>
 </div>
 <div class="container">
 	<div class="row">
+		<h3>Top songs:</h3>
 		{% for item in result %}
 		<div class="col-6 mb-1 p-1 d-flex align-items-stretch">
 			<div class="card d-flex flex-row flex-grow-1">
@@ -39,17 +50,13 @@
 				{% endif %}
 				<div class="card-body">
 					<p>
-						<a href="/get_albums/{{item.artist_id}}" class="card-link"
-							>Artist: {{item.artist_name}}</a
-						>
+						<a href="/albums/{{item.artist_id}}" class="card-link">Artist: {{item.artist_name}}</a>
 					</p>
 					<p>
-						<a href="/get_tracks/{{item.album_id}}" class="card-link">Album: {{item.album}}</a>
+						<a href="/albums/songs/{{item.album_id}}" class="card-link">Album: {{item.album}}</a>
 					</p>
 					<p>
-						<a href="/audio_analysis/{{item.track_id}}" class="card-link"
-							>Track: {{item.track_name}}</a
-						>
+						<a href="/songs/{{item.track_id}}" class="card-link">Track: {{item.track_name}}</a>
 					</p>
 				</div>
 			</div>
