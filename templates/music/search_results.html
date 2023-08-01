@@ -1,13 +1,25 @@
 {% extends 'base.html' %} {% block content %}
 
-<h3>Search results for {{search_term}}</h3>
+<h3>Search results for: {{search_term}}</h3>
 
 <div class="container">
 	<div class="row">
 		{% for item in result %} {% if item.type == 'track' %}
 		<div class="col-6 mb-1 p-1 d-flex align-items-stretch">
-			<div class="card d-flex flex-row flex-grow-1">
-				{% if item.image != '' %}
+			<div class="card d-flex flex-row flex-grow-1 position-relative">
+				{% if g.user.is_liked(item.track_id)%}
+				<i
+					id="like-icon-{{item.track_id}}"
+					data-track-id="{{item.track_id}}"
+					class="fas fa-heart fa-solid position-absolute top-0 end-0 m-2"
+					style="font-size: 1em"></i>
+				{% else %}
+				<i
+					id="like-icon-{{item.track_id}}"
+					data-track-id="{{item.track_id}}"
+					class="far fa-heart fa-light position-absolute top-0 end-0 m-2"
+					style="font-size: 1em"></i>
+				{% endif %} {% if item.image != '' %}
 				<img
 					height="200px"
 					width="200px"
@@ -39,8 +51,10 @@
 				{% endif %}
 
 				<div class="card-body">
-					<p>Artist: {{ item.name }}</p>
-					<a href="/albums/{{item.id}}" class="card-link">Get more albums from {{item.name}}</a>
+					<p><a href="/albums/{{item.artist_id}}">Artist: {{ item.name }}</a></p>
+					<p>
+						<a href="/albums/{{item.id}}" class="card-link">Get more albums from {{item.name}}</a>
+					</p>
 				</div>
 			</div>
 		</div>
@@ -57,13 +71,8 @@
 					width="200px" />
 				{% endif %}
 				<div class="card-body">
-					<p><a href="/albums/songs/{{item.id}}">Album: {{ item.name }}</a></p>
-					<p><a href="/albums/{{item.artist}}">Artist: {{ item.artist }}</a></p>
-					<p>
-						<a href="/albums/songs/{{item.id}}" class="card-link d-block"
-							>Track list: {{item.name}}</a
-						>
-					</p>
+					<p><a href="/albums/songs/{{item.album_id}}">Album: {{ item.name }}</a></p>
+					<p><a href="/albums/{{item.artist_id}}">Artist: {{ item.artist }}</a></p>
 				</div>
 			</div>
 		</div>

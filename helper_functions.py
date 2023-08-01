@@ -35,9 +35,11 @@ def get_albums(artist_id, token):
     headers = get_auth_header(token)
     result = get(url, headers=headers)
     json_result = result.json()['items']
+    print(json_result)
     album_set = set()
     album_list = []
     for item in json_result:
+        # print(item)
         id = item['id']
         release = item['release_date']
         name = item['name']
@@ -180,6 +182,7 @@ def generic_search(search_type, search_term, token):
                 'name': item['name'],
                 'artist': item['artists'][0]['name'],
                 'artist_id': item['artists'][0]['id'],
+                'track_id': item['id'],
                 'album': item['album']['name'],
                 'album_id': item['album']['id'],
                 'id': item['id'],
@@ -191,6 +194,7 @@ def generic_search(search_type, search_term, token):
                 'name': item['name'],
                 'id': item['id'],
                 'type': 'artist',
+                'artist_id': item['id'],
             }
         elif search_type == 'album':
             image_field = item['images']
@@ -201,6 +205,7 @@ def generic_search(search_type, search_term, token):
                 'artist_id': item['artists'][0]['id'],
                 'id': item['id'],
                 'type': 'album',
+                'album_id': item['id'],
             }
         
         if not image_field:

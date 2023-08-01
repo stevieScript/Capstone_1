@@ -2,7 +2,20 @@
 
 <h3>Analysis for: <b> {{result.track_name}} </b></h3>
 
-<div class="card d-flex flex-row">
+<div class="card d-flex flex-row position-relative">
+	{% if g.user.is_liked(result.track_id)%}
+	<i
+		id="like-icon-{{result.track_id}}"
+		data-track-id="{{result.track_id}}"
+		class="fas fa-heart fa-solid position-absolute top-0 end-0 m-2"
+		style="font-size: 1em"></i>
+	{% else %}
+	<i
+		id="like-icon-{{result.track_id}}"
+		data-track-id="{{result.track_id}}"
+		class="far fa-heart fa-light position-absolute top-0 end-0 m-2"
+		style="font-size: 1em"></i>
+	{% endif %}
 	<img
 		class="align-self-stretch img-thumbnail"
 		src="{{result.album_art}}"
