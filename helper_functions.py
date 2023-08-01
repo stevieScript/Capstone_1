@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 import os
 import base64
 from requests import post, get
-import dotenv, csv
+import dotenv
 
 dotenv.load_dotenv('.env')
 
@@ -55,13 +55,6 @@ def get_albums(artist_id, token):
                 'total_tracks': item['total_tracks'],
             })
     return album_list
-
-# def get_genre_seeds(token):
-#     url = 'https://api.spotify.com/v1/recommendations/available-genre-seeds'
-#     headers = get_auth_header(token)
-#     result = get(url, headers=headers)
-#     json_result = result.json()['genres']
-#     return json_result
 
 def get_pop_recommendations(token):
     url = 'https://api.spotify.com/v1/recommendations?limit=10&seed_genres=pop'
@@ -172,53 +165,6 @@ def get_audio_analysis(track_id, token):
     analysis.update(track_info)
     return analysis
     
-
-# def generic_search(search_type, search_term, token):
-#     default_image = 'https://images.unsplash.com/photo-1601066525716-3cca33c6d4c6?ixlib=rb-4.0.3&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80'
-#     url = f'https://api.spotify.com/v1/search?q={search_term}&type={search_type}&limit=10'
-#     headers = get_auth_header(token)
-#     search_result = get(url, headers=headers)
-#     result = []
-#     if search_type == 'track':
-#         for item in search_result.json()['tracks']['items']:
-            
-#             if len(item['album']['images']) == 0:
-#                 item['album']['images'].append({'url': default_image})
-#             result.append({
-#                 'name': item['name'],
-#                 'artist': item['artists'][0]['name'],
-#                 'artist_id': item['artists'][0]['id'],
-#                 'album': item['album']['name'],
-#                 'album_id': item['album']['id'],
-#                 'id': item['id'],
-#                 'type': 'track',
-#                 'image': item['album']['images'][0]['url']
-#             })
-#     elif search_type == 'artist':
-#         for item in search_result.json()['artists']['items']:
-#             if len(item['images']) == 0:
-#                 item['images'].append({'url': default_image})
-#             result.append({
-#                 'name': item['name'],
-#                 'id': item['id'],
-#                 'image': item['images'][0]['url'],
-#                 'type': 'artist',
-#             })
-#     elif search_type == 'album':
-#         for item in search_result.json()['albums']['items']:
-           
-#             if len(item['images']) == 0:
-#                 item['images'].append({'url': default_image})
-#             result.append({
-#                 'image': item['images'][0]['url'],
-#                 'name': item['name'],
-#                 'artist': item['artists'][0]['name'],
-#                 'artist_id': item['artists'][0]['id'],
-#                 'id': item['id'],
-#                 'type': 'album',
-#             })
-
-#     return result
 def generic_search(search_type, search_term, token):
     default_image = 'https://images.unsplash.com/photo-1601066525716-3cca33c6d4c6?ixlib=rb-4.0.3&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80'
     url = f'https://api.spotify.com/v1/search?q={search_term}&type={search_type}&limit=10'
