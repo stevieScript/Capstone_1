@@ -67,19 +67,23 @@ def search():
     user = User.query.get_or_404(g.user.id)
 
     if request.method == "GET":
-        search_type = request.args.get("search_type")
-        search_term = request.args.get("search_term")
-        if search_term and search_type:
-            token = get_token()
-            result = generic_search(search_type, search_term, token)
-            return render_template(
-                "/music/search_results.html",
-                result=result,
-                user=user,
-                search_term=search_term,
-            )
-        else:
-            return render_template("/music/search.html", user=user)
+        try:
+            search_type = request.args.get("search_type")
+            search_term = request.args.get("search_term")
+            if search_term and search_type:
+                token = get_token()
+                result = generic_search(search_type, search_term, token)
+                return render_template(
+                    "/music/search_results.html",
+                    result=result,
+                    user=user,
+                    search_term=search_term,
+                )
+            else:
+                return render_template("/music/search.html", user=user)
+        except:
+            flash("Something went wrong. Please try again.", "danger")
+            return redirect("/")
     else:
         return render_template("/music/search.html", user=user)
 

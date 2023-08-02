@@ -10,11 +10,14 @@ def get_artist_albums(artist_id):
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
-    
-    user = User.query.get_or_404(g.user.id)
-    token = get_token()
-    result = get_albums(artist_id, token)
-    return render_template("/music/albums.html", result=result, user=user)
+    try:
+        user = User.query.get_or_404(g.user.id)
+        token = get_token()
+        result = get_albums(artist_id, token)
+        return render_template("/music/albums.html", result=result, user=user), 200
+    except:
+        flash("Something went wrong. Please try again.", "danger")
+        return redirect("/")
 
 @albums_bp.route("/songs/<album_id>", methods=["GET", "POST"])
 def get_songs(album_id):
@@ -22,9 +25,12 @@ def get_songs(album_id):
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
-
-    token = get_token()
-    result = get_album_tracks(album_id, token)
-    user = User.query.get_or_404(g.user.id)
-    playlists = [(playlist.id, playlist.name) for playlist in user.playlists]
-    return render_template("/music/track_listing.html", result=result, user=user, playlists=playlists)
+    try:
+        token = get_token()
+        result = get_album_tracks(album_id, token)
+        user = User.query.get_or_404(g.user.id)
+        playlists = [(playlist.id, playlist.name) for playlist in user.playlists]
+        return render_template("/music/track_listing.html", result=result, user=user, playlists=playlists), 200
+    except:
+        flash("Something went wrong. Please try again.", "danger")
+        return redirect("/")

@@ -47,13 +47,17 @@ def signup():
 def login():
     """Handle user login."""
     form = LoginForm()
-    if form.validate_on_submit():
-        user = User.authenticate(form.username.data, form.password.data)
-        if user:
-            do_login(user)
-            return redirect(f"/user")
-        flash("Invalid credentials.", "danger")
-    return render_template("/user/login.html", form=form)
+    try:
+        if form.validate_on_submit():
+            user = User.authenticate(form.username.data, form.password.data)
+            if user:
+                do_login(user)
+                return redirect(f"/user")
+            flash("Invalid credentials.", "danger")
+        return render_template("/user/login.html", form=form), 200
+    except:
+        flash("Something went wrong. Please try again.", "danger")
+        return redirect("/")
 
 @user_bp.route("/logout")
 def logout():
@@ -68,12 +72,16 @@ def user_profile():
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
-    user = User.query.get_or_404(g.user.id)
-    playlists = Playlist.query.filter(Playlist.user_id == user.id).all()
-    token = get_token()
-    result = get_pop_recommendations(token)
-    return render_template(
-        "/user/user.html", user=user, playlists=playlists, result=result)
+    try:
+        user = User.query.get_or_404(g.user.id)
+        playlists = Playlist.query.filter(Playlist.user_id == user.id).all()
+        token = get_token()
+        result = get_pop_recommendations(token)
+        return render_template(
+            "/user/user.html", user=user, playlists=playlists, result=result), 200
+    except:
+        flash("Something went wrong. Please try again.", "danger")
+        return redirect("/")
 
 @user_bp.route("/delete", methods=["POST"])
 def delete_user():
@@ -81,13 +89,16 @@ def delete_user():
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
-
-    user = User.query.get_or_404(g.user.id)
-    db.session.delete(user)
-    db.session.commit()
-    do_logout()
-    flash("User deleted", "success")
-    return redirect("/")
+    try:
+        user = User.query.get_or_404(g.user.id)
+        db.session.delete(user)
+        db.session.commit()
+        do_logout()
+        flash("User deleted", "success")
+        return redirect("/")
+    except:
+        flash("Something went wrong. Please try again.", "danger")
+        return redirect("/")
 
 @user_bp.route("/edit", methods=["GET", "POST"])
 def edit_user():
@@ -95,15 +106,18 @@ def edit_user():
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
+    try:
+        user = User.query.get_or_404(g.user.id)
+        form = EditUserForm(obj=user)
 
-    user = User.query.get_or_404(g.user.id)
-    form = EditUserForm(obj=user)
-
-    if form.validate_on_submit():
-        user.username = form.username.data
-        user.email = form.email.data
-        db.session.commit()
-        flash("User updated", "success")
-        return redirect(f"/user")
-    else:
-        return render_template("/user/edit_user.html", form=form, user=user)
+        if form.validate_on_submit():
+            user.username = form.username.data
+            user.email = form.email.data
+            db.session.commit()
+            flash("User updated", "success")
+            return redirect(f"/user"), 200
+        else:
+            return render_template("/user/edit_user.html", form=form, user=user), 200
+    except:
+        flash("Something went wrong. Please try again.", "danger")
+        return redirect("/")
