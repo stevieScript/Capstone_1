@@ -55,18 +55,57 @@ $(document).ready(function () {
 	});
 
 	createPlaylistForm.on('submit', async function (e) {
-		// e.preventDefault();
-		const playlistName = $('#name').val();
-		const playlistDescription = $('#description').val();
+		e.preventDefault();
+		try {
+			const playlistName = $('#name').val();
+			const playlistDescription = $('#description').val();
 
-		const dataToSend = {
-			playlist_name: playlistName,
-			playlist_description: playlistDescription,
-		};
-		if (currentTrackId) {
-			dataToSend.track_id = currentTrackId;
+			const dataToSend = {
+				playlist_name: playlistName,
+				playlist_description: playlistDescription,
+			};
+			if (currentTrackId) {
+				dataToSend.track_id = currentTrackId;
+			}
+			const response = await axios.post('/playlists/add', dataToSend);
+			if (response.status === 200) {
+				window.location.reload();
+			}
+		} catch (error) {
+			console.error(error);
 		}
-		const response = await axios.post('/playlists/add', dataToSend);
 	});
+
+	const deleteButtons = document.querySelectorAll('.btn-danger');
+
+	deleteButtons.forEach(function (button) {
+		button.addEventListener('click', function (event) {
+			event.preventDefault();
+			const playlistId = this.getAttribute('data-playlist-id');
+			deletePlaylist(playlistId);
+		});
+	});
+
+	async function deletePlaylist(playlistId) {
+		try {
+			// Use Axios to send the delete request
+			const response = await axios.delete(`/playlists/${playlistId}/delete`);
+
+			if (response.status === 200) {
+				// Handle successful deletion, e.g., remove the card from the UI
+				const cardToDelete = document
+					.querySelector(`[data-playlist-id="${playlistId}"]`)
+					.closest('.card');
+				cardToDelete.remove();
+				window.location.reload();
+			} else {
+				// Handle deletion error, show an error message, etc.
+				console.error('Failed to delete playlist.');
+			}
+		} catch (error) {
+			// Handle any errors that may occur during the deletion process
+			console.error('An error occurred while deleting the playlist:', error);
+		}
+	}
 });
 

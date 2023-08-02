@@ -14,9 +14,7 @@
 			{% endif %}
 		</div>
 		<div class="ml-auto align-self-center">
-			<form action="/playlists/{{playlist.id}}/delete" method="POST">
-				<button type="submit" class="btn btn-danger">Delete Playlist</button>
-			</form>
+			<button class="btn btn-danger" data-playlist-id="{{ playlist.id }}">Delete Playlist</button>
 		</div>
 	</div>
 </div>

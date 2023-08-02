@@ -14,17 +14,21 @@ def show_playlists():
     user = User.query.get_or_404(g.user.id)
     playlists = Playlist.query.filter(Playlist.user_id == user.id).all()
     if request.method == "POST":
-        data = request.get_json()
-        playlist_name = request.form.get("playlist_name")
-        playlist_description = request.form.get("playlist_description")
-        if playlist_name:
-            playlist = Playlist(
-                name=playlist_name, user_id=user.id, description=playlist_description)
-            db.session.add(playlist)
-            db.session.commit()
-            flash("Playlist created", "success")
-            return render_template("/music/playlists.html", user=user, playlists=playlists)
-    return render_template("/music/playlists.html", user=user, playlists=playlists)
+        try:
+            data = request.get_json()
+            playlist_name = request.form.get("playlist_name")
+            playlist_description = request.form.get("playlist_description")
+            if playlist_name:
+                playlist = Playlist(
+                    name=playlist_name, user_id=user.id, description=playlist_description)
+                db.session.add(playlist)
+                db.session.commit()
+                flash("Playlist created", "success")
+                return render_template("/music/playlists.html", user=user, playlists=playlists), 200
+        except:
+            flash("Error occurred while creating the playlist", "danger")
+            return render_template("/music/playlists.html", user=user, playlists=playlists), 500
+    return render_template("/music/playlists.html", user=user, playlists=playlists), 200
 
 @playlist_bp.route("/add", methods=["POST"])
 def add_song_to_playlist():
@@ -61,13 +65,12 @@ def add_song_to_playlist():
         db.session.add(playlist_song)
 
     try:
-        db.session.commit()
-        flash("Song added to playlist", "success")
+        db.session.commit(), 200
     except:
         db.session.rollback()
-        flash("Error occurred while adding the song to the playlist", "danger")
+        flash("Error occurred while adding the song to the playlist", "danger"), 500
 
-    return redirect(f"/playlists/{playlist.id}")
+    return redirect(f"/playlists/{playlist.id}"), 200
 
 @playlist_bp.route("/<int:playlist_id>", methods=["GET", "POST"])
 def show_playlist(playlist_id):
@@ -75,36 +78,44 @@ def show_playlist(playlist_id):
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
+    try:
+        user = User.query.get_or_404(g.user.id)
+        playlist = Playlist.query.get_or_404(playlist_id)
+        songs = PlaylistSong.query.filter(PlaylistSong.playlist_id == playlist_id).all()
+        return render_template("/music/playlist.html", user=user, playlist=playlist, songs=songs), 200
+    except:
+        flash("Error occurred while showing the playlist", "danger")
+        return redirect("/playlists"), 500
     
-    user = User.query.get_or_404(g.user.id)
-    playlist = Playlist.query.get_or_404(playlist_id)
-    songs = PlaylistSong.query.filter(PlaylistSong.playlist_id == playlist_id).all()
-    return render_template("/music/playlist.html", user=user, playlist=playlist, songs=songs)
-
-@playlist_bp.route("/<int:playlist_id>/<track_id>", methods=["GET", "POST"])
+@playlist_bp.route("/<int:playlist_id>/<track_id>", methods=["GET", "POST", "DELETE"])
 def track_details(playlist_id, track_id):
     """Show track details."""
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
-    
-    user = User.query.get_or_404(g.user.id)
-    playlist = Playlist.query.get_or_404(playlist_id)
-    song = Song.query.filter(Song.track_id == track_id).first()
-    return render_template("/music/song_details.html", user=user, playlist=playlist, song=song)
+    try: 
+        user = User.query.get_or_404(g.user.id)
+        playlist = Playlist.query.get_or_404(playlist_id)
+        song = Song.query.filter(Song.track_id == track_id).first()
+        return render_template("/music/song_details.html", user=user, playlist=playlist, song=song), 200
+    except:
+        flash("Error occurred while showing the track details", "danger")
+        return redirect(f"/playlists/{playlist_id}"), 500
 
-@playlist_bp.route("/<int:playlist_id>/delete", methods=["POST"])
+@playlist_bp.route("/<int:playlist_id>/delete", methods=["DELETE"])
 def delete_playlist(playlist_id):
     """Delete playlist."""
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
-    
-    playlist = Playlist.query.get_or_404(playlist_id)
-    db.session.delete(playlist)
-    db.session.commit()
-    flash("Playlist deleted.", "success")
-    return redirect(f"/playlists")
+    try: 
+        playlist = Playlist.query.get_or_404(playlist_id)
+        db.session.delete(playlist)
+        db.session.commit()
+        return redirect(f"/playlists"), 200
+    except:
+        flash("Error occurred while deleting the playlist", "danger")
+        return redirect(f"/playlists/{playlist_id}"), 500
 
 @playlist_bp.route("/<int:playlist_id>/<int:song_id>/delete", methods=["POST"])
 def delete_song(playlist_id, song_id):
@@ -112,9 +123,11 @@ def delete_song(playlist_id, song_id):
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
-    
-    playlist_song = PlaylistSong.query.filter(PlaylistSong.playlist_id == playlist_id, PlaylistSong.song_id == song_id).first()
-    db.session.delete(playlist_song)
-    db.session.commit()
-    flash("Song deleted from playlist.", "success")
-    return redirect(f"/playlists/{playlist_id}")
+    try:
+        playlist_song = PlaylistSong.query.filter(PlaylistSong.playlist_id == playlist_id, PlaylistSong.song_id == song_id).first()
+        db.session.delete(playlist_song)
+        db.session.commit()
+        return redirect(f"/playlists/{playlist_id}"), 200
+    except:
+        flash("Error occurred while deleting the song from the playlist", "danger")
+        return redirect(f"/playlists/{playlist_id}/{song_id}"), 500
