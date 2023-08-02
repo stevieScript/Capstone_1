@@ -76,14 +76,10 @@ $(document).ready(function () {
 		}
 	});
 
-	const deleteButtons = document.querySelectorAll('.btn-danger');
-
-	deleteButtons.forEach(function (button) {
-		button.addEventListener('click', function (event) {
-			event.preventDefault();
-			const playlistId = this.getAttribute('data-playlist-id');
-			deletePlaylist(playlistId);
-		});
+	$('.btn-danger').click(async function (event) {
+		event.preventDefault();
+		const playlistId = $(this).attr('data-playlist-id');
+		await deletePlaylist(playlistId);
 	});
 
 	async function deletePlaylist(playlistId) {
@@ -93,10 +89,7 @@ $(document).ready(function () {
 
 			if (response.status === 200) {
 				// Handle successful deletion, e.g., remove the card from the UI
-				const cardToDelete = document
-					.querySelector(`[data-playlist-id="${playlistId}"]`)
-					.closest('.card');
-				cardToDelete.remove();
+				$(`[data-playlist-id="${playlistId}"]`).closest('.card').remove();
 				window.location.reload();
 			} else {
 				// Handle deletion error, show an error message, etc.
@@ -107,5 +100,12 @@ $(document).ready(function () {
 			console.error('An error occurred while deleting the playlist:', error);
 		}
 	}
+
+	$('.card-img-left').click(async function (e) {
+		e.preventDefault();
+		let albumId = $(this).closest('.card').find('.card-link').attr('href');
+		console.log(albumId);
+		window.location.href = albumId;
+	});
 });
 
