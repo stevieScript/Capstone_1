@@ -53,12 +53,7 @@
 			<div class="card d-flex flex-row flex-grow-1">
 				<!-- add album image if it exists in item.album_art -->
 				{% if item.image != '' %}
-				<img
-					src="{{item.image}}"
-					alt="album art"
-					class="img-thumbnail"
-					height="200px"
-					width="200px" />
+				<img class="card-img-left w-50" src="{{item.image}}" alt="album art" />
 				{% endif %}
 				<div class="card-body">
 					<p><a href="/albums/songs/{{item.album_id}}">Album: {{ item.name }}</a></p>
