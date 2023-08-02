@@ -43,7 +43,7 @@
 	<div class="row">
 		<h3>Top songs:</h3>
 		{% for item in result %}
-		<div class="col-6 mb-1 p-1 d-flex align-items-stretch">
+		<div class="col-xs-12 col-md-6 mb-1 p-1 d-flex align-items-stretch">
 			<div class="card d-flex flex-row flex-grow-1 position-relative">
 				{% if g.user.is_liked(item.track_id)%}
 				<i
@@ -58,7 +58,7 @@
 					class="far fa-heart fa-light position-absolute top-0 end-0 m-2"
 					style="font-size: 1em"></i>
 				{% endif %} {% if item.album_art %}
-				<img class="card-img-left" width="200px" src="{{item.album_art}}" alt="album art" />
+				<img class="card-img-left w-50" src="{{item.album_art}}" alt="album art" />
 				{% endif %}
 				<div class="card-body">
 					<p>

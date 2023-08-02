@@ -46,7 +46,7 @@ class UserViewTestCase(TestCase):
             with c.session_transaction() as sess:
                 sess[CURR_USER_KEY] = self.u.id
 
-            resp = c.get(f"/user/{self.u.id}")
+            resp = c.get(f"/user/")
 
             self.assertEqual(resp.status_code, 200)
             self.assertIn(self.u.username, str(resp.data))
@@ -58,7 +58,7 @@ class UserViewTestCase(TestCase):
             with c.session_transaction() as sess:
                 sess[CURR_USER_KEY] = self.u.id
 
-            resp = c.get(f"/user/{self.u.id}/playlists")
+            resp = c.get(f"/playlists/")
 
             self.assertEqual(resp.status_code, 200)
             self.assertIn('Create Playlist', str(resp.data))
@@ -71,7 +71,7 @@ class UserViewTestCase(TestCase):
             with c.session_transaction() as sess:
                 sess[CURR_USER_KEY] = self.u.id
 
-            resp = c.get(f"/user/{self.u.id}/search")
+            resp = c.get(f"/search")
 
             self.assertEqual(resp.status_code, 200)
             self.assertIn('Search', str(resp.data))
@@ -83,7 +83,7 @@ class UserViewTestCase(TestCase):
             with c.session_transaction() as sess:
                 sess[CURR_USER_KEY] = self.u.id
 
-            resp = c.get(f"/songs/{self.u.id}/{self.track_id}")
+            resp = c.get(f"/songs/{self.track_id}")
 
             self.assertEqual(resp.status_code, 200)
             self.assertIn('Analysis', str(resp.data))
@@ -95,7 +95,7 @@ class UserViewTestCase(TestCase):
             with c.session_transaction() as sess:
                 sess[CURR_USER_KEY] = self.u.id
 
-            resp = c.get(f"/songs/{self.u.id}/{self.track_id}")
+            resp = c.get(f"/songs/{self.track_id}")
 
             self.assertEqual(resp.status_code, 200)
             self.assertIn('Add song', str(resp.data))
@@ -107,7 +107,7 @@ class UserViewTestCase(TestCase):
             with c.session_transaction() as sess:
                 sess[CURR_USER_KEY] = self.u.id
 
-            resp = c.get(f"/user/{self.u.id}/playlists")
+            resp = c.get(f"/playlists/")
 
             self.assertEqual(resp.status_code, 200)
             self.assertIn('Create Playlist', str(resp.data))
@@ -119,7 +119,7 @@ class UserViewTestCase(TestCase):
             with c.session_transaction() as sess:
                 sess[CURR_USER_KEY] = self.u.id
 
-            resp = c.get(f"/user/{self.u.id}/search")
+            resp = c.get(f"/search")
 
             self.assertEqual(resp.status_code, 200)
             self.assertIn('Search', str(resp.data))
@@ -135,12 +135,15 @@ class UserViewTestCase(TestCase):
             db.session.add(p)
             db.session.commit()
 
-            resp = c.post(f"/user/{self.u.id}/playlists/1/delete", follow_redirects=True)
+            resp = c.post(f"/playlists/{p.id}", follow_redirects=True)
 
             self.assertEqual(resp.status_code, 200)
-            self.assertIn('Create Playlist', str(resp.data))
+            self.assertIn('Search', str(resp.data))
 
-            db.session.delete(p)
+            # Check if the playlist was deleted from the database
+            playlist = Playlist.query.get(p.id)
+            self.assertIsNone(playlist)
+
 
     def test_delete_track(self):
         """Does delete track page work?"""
@@ -161,7 +164,7 @@ class UserViewTestCase(TestCase):
             db.session.add(ps)
             db.session.commit()
 
-            resp = c.post(f"/user/{self.u.id}/playlists/1/1/delete", follow_redirects=True)
+            resp = c.post(f"/playlists/1/1/delete", follow_redirects=True)
 
             self.assertEqual(resp.status_code, 200)
             self.assertIn('Playlist', str(resp.data))

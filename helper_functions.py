@@ -35,11 +35,9 @@ def get_albums(artist_id, token):
     headers = get_auth_header(token)
     result = get(url, headers=headers)
     json_result = result.json()['items']
-    print(json_result)
     album_set = set()
     album_list = []
     for item in json_result:
-        # print(item)
         id = item['id']
         release = item['release_date']
         name = item['name']

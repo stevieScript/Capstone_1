@@ -23,7 +23,7 @@ def show_playlists():
             db.session.add(playlist)
             db.session.commit()
             flash("Playlist created", "success")
-            return redirect("/playlists")
+            return render_template("/music/playlists.html", user=user, playlists=playlists)
     return render_template("/music/playlists.html", user=user, playlists=playlists)
 
 @playlist_bp.route("/add", methods=["POST"])

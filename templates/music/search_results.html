@@ -5,7 +5,7 @@
 <div class="container">
 	<div class="row">
 		{% for item in result %} {% if item.type == 'track' %}
-		<div class="col-6 mb-1 p-1 d-flex align-items-stretch">
+		<div class="col-xs-12 col-md-6 mb-1 p-1 d-flex align-items-stretch">
 			<div class="card d-flex flex-row flex-grow-1 position-relative">
 				{% if g.user.is_liked(item.track_id)%}
 				<i
@@ -20,12 +20,7 @@
 					class="far fa-heart fa-light position-absolute top-0 end-0 m-2"
 					style="font-size: 1em"></i>
 				{% endif %} {% if item.image != '' %}
-				<img
-					height="200px"
-					width="200px"
-					src="{{item.image}}"
-					alt="album art"
-					class="img-thumbnail img-fluid" />
+				<img class="card-img-left w-50 img-fluid" src="{{item.image}}" alt="album art" />
 				{% endif %}
 				<div class="card-body">
 					<p><a href="/songs/{{item.id}}" class="card-link">Name: {{ item.name }}</a></p>
@@ -39,15 +34,10 @@
 			</div>
 		</div>
 		{% endif %} {% if item.type == 'artist' %}
-		<div class="col-6 mb-1 p-1 d-flex align-items-stretch">
+		<div class="col-xs-12 col-md-6 mb-1 p-1 d-flex align-items-stretch">
 			<div class="card d-flex flex-row flex-grow-1">
 				{% if item.image %}
-				<img
-					src="{{item.image}}"
-					alt="album art"
-					class="img-thumbnail"
-					height="200px"
-					width="200px" />
+				<img class="card-img-left w-50" src="{{item.album_art}}" alt="album art" />
 				{% endif %}
 
 				<div class="card-body">
@@ -59,7 +49,7 @@
 			</div>
 		</div>
 		{% endif %} {% if item.type == 'album' %}
-		<div class="col-6 mb-1 p-1 d-flex align-items-stretch">
+		<div class="col-xs-12 col-md-6 mb-1 p-1 d-flex align-items-stretch">
 			<div class="card d-flex flex-row flex-grow-1">
 				<!-- add album image if it exists in item.album_art -->
 				{% if item.image != '' %}
