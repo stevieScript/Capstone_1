@@ -63,10 +63,11 @@ $(document).ready(function () {
 			const dataToSend = {
 				playlist_name: playlistName,
 				playlist_description: playlistDescription,
+				track_id: currentTrackId,
 			};
-			if (currentTrackId) {
-				dataToSend.track_id = currentTrackId;
-			}
+			// if (currentTrackId) {
+			// 	dataToSend.track_id = currentTrackId;
+			// }
 			const response = await axios.post('/playlists/add', dataToSend);
 			if (response.status === 200) {
 				window.location.reload();

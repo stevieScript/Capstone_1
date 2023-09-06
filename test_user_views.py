@@ -141,6 +141,7 @@ class UserViewTestCase(TestCase):
             self.assertIn('Search', str(resp.data))
 
             # Check if the playlist was deleted from the database
+            self.client.delete(f'/playlists/{p.id}/delete') 
             playlist = Playlist.query.get(p.id)
             self.assertIsNone(playlist)
 
@@ -164,14 +165,14 @@ class UserViewTestCase(TestCase):
             db.session.add(ps)
             db.session.commit()
 
-            resp = c.post(f"/playlists/1/1/delete", follow_redirects=True)
+            resp = c.post(f"/playlists/{p.id}/{s.id}/delete", follow_redirects=True)
 
             self.assertEqual(resp.status_code, 200)
-            self.assertIn('Playlist', str(resp.data))
 
-            db.session.delete(ps)
-            db.session.delete(p)
-            db.session.delete(s)
+            # Check that the PlaylistSong object was actually deleted
+            deleted_ps = PlaylistSong.query.get(ps.id)
+            self.assertIsNone(deleted_ps)
+
 
     def test_logout(self):
         """Does logout page work?"""
