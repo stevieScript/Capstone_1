@@ -20,9 +20,8 @@ def song_details(track_id):
         try:
             data = request.get_json()
             playlist_id = data.get("playlist_id")
-            if Song.query.filter(Song.track_id == track_id).first():
-                song = Song.query.filter(Song.track_id == track_id).first()
-            else:
+            song = Song.query.filter(Song.track_id == track_id).first()
+            if not song:
                 song = Song.create_song(result)
                 db.session.add(song)
                 db.session.commit()

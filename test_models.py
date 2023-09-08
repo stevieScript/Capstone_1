@@ -28,6 +28,11 @@ class UserModelTestCase(TestCase):
         db.session.commit()
         self.u = u
 
+    def tearDown(self):
+        """Clean up fouled transactions."""
+
+        db.session.rollback()
+
     def test_user_model(self):
         """Does basic model work?"""
 
