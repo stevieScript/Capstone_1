@@ -11,7 +11,7 @@ def get_artist_albums(artist_id):
         flash("Access unauthorized.", "danger")
         return redirect("/")
     try:
-        user = User.query.get_or_404(g.user.id)
+        user = g.user
         token = get_token()
         result = get_albums(artist_id, token)
         return render_template("/music/albums.html", result=result, user=user), 200
@@ -28,7 +28,7 @@ def get_songs(album_id):
     try:
         token = get_token()
         result = get_album_tracks(album_id, token)
-        user = User.query.get_or_404(g.user.id)
+        user = g.user
         playlists = [(playlist.id, playlist.name) for playlist in user.playlists]
         return render_template("/music/track_listing.html", result=result, user=user, playlists=playlists), 200
     except:

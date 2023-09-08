@@ -10,7 +10,7 @@ def song_details(track_id):
         flash("Access unauthorized.", "danger")
         return redirect("/")
 
-    user = User.query.get_or_404(g.user.id)
+    user = g.user
     playlists = [(playlist.id, playlist.name) for playlist in user.playlists]
 
     token = get_token()
@@ -46,7 +46,7 @@ def like_song(track_id):
         flash("Access unauthorized.", "danger")
         return redirect("/")
     
-    user = User.query.get_or_404(g.user.id)
+    user = g.user
     song = Song.query.filter_by(track_id=track_id).first()
     try:
         if not song:
@@ -71,7 +71,7 @@ def unlike_song(track_id):
         flash("Access unauthorized.", "danger")
         return redirect("/")
     try:
-        user = User.query.get_or_404(g.user.id)
+        user = g.user
         song = Song.query.filter_by(track_id=track_id).first()
 
         if not song:

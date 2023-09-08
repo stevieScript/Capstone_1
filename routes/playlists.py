@@ -11,7 +11,7 @@ def show_playlists():
         flash("Access unauthorized.", "danger")
         return redirect("/")
 
-    user = User.query.get_or_404(g.user.id)
+    user = g.user
     playlists = Playlist.query.filter(Playlist.user_id == user.id).all()
     if request.method == "POST":
         try:
@@ -37,7 +37,7 @@ def add_song_to_playlist():
         flash("Access unauthorized.", "danger")
         return redirect("/")
 
-    user = User.query.get_or_404(g.user.id)
+    user = g.user
 
     data = request.get_json()
     playlist_name = data.get("playlist_name")
@@ -79,7 +79,7 @@ def show_playlist(playlist_id):
         flash("Access unauthorized.", "danger")
         return redirect("/")
     try:
-        user = User.query.get_or_404(g.user.id)
+        user = g.user
         playlist = Playlist.query.get_or_404(playlist_id)
         songs = PlaylistSong.query.filter(PlaylistSong.playlist_id == playlist_id).all()
         return render_template("/music/playlist.html", user=user, playlist=playlist, songs=songs), 200
@@ -94,7 +94,7 @@ def track_details(playlist_id, track_id):
         flash("Access unauthorized.", "danger")
         return redirect("/")
     try: 
-        user = User.query.get_or_404(g.user.id)
+        user = g.user
         playlist = Playlist.query.get_or_404(playlist_id)
         song = Song.query.filter(Song.track_id == track_id).first()
         return render_template("/music/song_details.html", user=user, playlist=playlist, song=song), 200

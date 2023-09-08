@@ -73,7 +73,7 @@ def user_profile():
         flash("Access unauthorized.", "danger")
         return redirect("/")
     try:
-        user = User.query.get_or_404(g.user.id)
+        user = g.user
         playlists = Playlist.query.filter(Playlist.user_id == user.id).all()
         token = get_token()
         result = get_pop_recommendations(token)
@@ -90,7 +90,7 @@ def delete_user():
         flash("Access unauthorized.", "danger")
         return redirect("/")
     try:
-        user = User.query.get_or_404(g.user.id)
+        user = g.user
         db.session.delete(user)
         db.session.commit()
         do_logout()
@@ -107,7 +107,7 @@ def edit_user():
         flash("Access unauthorized.", "danger")
         return redirect("/")
     try:
-        user = User.query.get_or_404(g.user.id)
+        user = g.user
         form = EditUserForm(obj=user)
 
         if form.validate_on_submit():
