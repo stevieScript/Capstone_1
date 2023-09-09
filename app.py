@@ -53,9 +53,9 @@ def do_logout():
 def homepage():
     """Show homepage."""
     if g.user:
-        return redirect(f"/user")
+        return redirect(f"/user"), 302
     else:
-        return render_template("base.html")
+        return render_template("base.html"), 200
 
 @app.route("/search", methods=["GET", "POST"])
 def search():
@@ -64,7 +64,7 @@ def search():
         flash("Access unauthorized.", "danger")
         return redirect("/")
     
-    user = User.query.get_or_404(g.user.id)
+    user = g.user
 
     if request.method == "GET":
         try:
@@ -80,10 +80,10 @@ def search():
                     search_term=search_term,
                 )
             else:
-                return render_template("/music/search.html", user=user)
+                return render_template("/music/search.html", user=user), 200
         except:
             flash("Something went wrong. Please try again.", "danger")
-            return redirect("/")
+            return redirect("/"), 500
     else:
         return render_template("/music/search.html", user=user)
 

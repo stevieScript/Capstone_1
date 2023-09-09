@@ -63,15 +63,17 @@ $(document).ready(function () {
 			const dataToSend = {
 				playlist_name: playlistName,
 				playlist_description: playlistDescription,
-				track_id: currentTrackId,
+				track_id: currentTrackId || null,
 			};
 			// if (currentTrackId) {
 			// 	dataToSend.track_id = currentTrackId;
 			// }
+			console.log(dataToSend);
 			const response = await axios.post('/playlists/add', dataToSend);
-			if (response.status === 200) {
-				window.location.reload();
-			}
+			console.log(response);
+			// if (response.status === 200) {
+			// 	window.location.reload();
+			// }
 		} catch (error) {
 			console.error(error);
 		}

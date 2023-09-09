@@ -42,7 +42,7 @@ def add_song_to_playlist():
     data = request.get_json()
     playlist_name = data.get("playlist_name")
     playlist_description = data.get("playlist_description")
-    track_id = data.get("track_id", None)
+    track_id = data.get("track_id")
     playlist = Playlist(
         name=playlist_name, description=playlist_description, user_id=user.id
     )
@@ -65,7 +65,7 @@ def add_song_to_playlist():
         db.session.add(playlist_song)
 
     try:
-        db.session.commit(), 200
+        db.session.commit()
     except:
         db.session.rollback()
         flash("Error occurred while adding the song to the playlist", "danger"), 500

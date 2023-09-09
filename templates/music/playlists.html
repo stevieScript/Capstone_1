@@ -21,16 +21,12 @@
 {% endfor %} {% endif %}
 <div class="card mb-2">
 	<div class="card-body">
-		<form id="create-playlist" method="POST">
+		<form id="create-add-playlist">
 			<label class="form-label" for="playlist_name">Playlist Name:</label>
-			<input class="form-control" type="text" id="playlist_name" name="playlist_name" required />
+			<input class="form-control" type="text" id="name" name="playlist_name" required />
 			<label class="form-label" for="playlist_description">Playlist Description (Optional):</label>
-			<input
-				class="form-control"
-				type="text"
-				id="playlist_description"
-				name="playlist_description" />
-			<button class="btn btn-primary mt-2" type="submit">Create Playlist</button>
+			<input class="form-control" type="text" id="description" name="playlist_description" />
+			<button class="btn btn-primary mt-2" type="submit" id="create-add">Create Playlist</button>
 		</form>
 	</div>
 </div>
