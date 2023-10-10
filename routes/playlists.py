@@ -10,7 +10,6 @@ def show_playlists():
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
-
     user = g.user
     playlists = Playlist.query.filter(Playlist.user_id == user.id).all()
     if request.method == "POST":
@@ -36,9 +35,7 @@ def add_song_to_playlist():
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
-
     user = g.user
-
     data = request.get_json()
     playlist_name = data.get("playlist_name")
     playlist_description = data.get("playlist_description")
@@ -47,26 +44,23 @@ def add_song_to_playlist():
         name=playlist_name, description=playlist_description, user_id=user.id
     )
     db.session.add(playlist)
-    db.session.commit()
-
     # Add the song to the newly created playlist, only if a track_id is provided
-    if track_id is not None:
+    if track_id:
         token = get_token()
         result = get_audio_analysis(track_id, token)
-
         song = Song.query.filter(Song.track_id == track_id).first()
-        if song is None:
+        if not song:
             song = Song.create_song(result)
             db.session.add(song)
-
+            db.session.commit()
         playlist_song = PlaylistSong(
             playlist_id=playlist.id, song_id=song.id, user_id=user.id
         )
         db.session.add(playlist_song)
-
+        db.session.commit()  
     try:
         db.session.commit()
-    except:
+    except Exception as e:
         db.session.rollback()
         flash("Error occurred while adding the song to the playlist", "danger"), 500
 
@@ -117,7 +111,7 @@ def delete_playlist(playlist_id):
         flash("Error occurred while deleting the playlist", "danger")
         return redirect(f"/playlists/{playlist_id}"), 500
 
-@playlist_bp.route("/<int:playlist_id>/<int:song_id>/delete", methods=["POST"])
+@playlist_bp.route("/<int:playlist_id>/<int:song_id>/delete", methods=["DELETE"])
 def delete_song(playlist_id, song_id):
     """Delete song from playlist."""
     if not g.user:
@@ -130,4 +124,4 @@ def delete_song(playlist_id, song_id):
         return redirect(f"/playlists/{playlist_id}"), 200
     except:
         flash("Error occurred while deleting the song from the playlist", "danger")
-        return redirect(f"/playlists/{playlist_id}/{song_id}"), 500
+        return redirect(f"/playlists/{playlist_id}"), 500

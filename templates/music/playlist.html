@@ -12,9 +12,13 @@
 			<h6 class="card-subtitle mb-2 text-muted align-self-end">{{song.artist_name}}</h6>
 		</div>
 		<div class="ml-auto align-self-center">
-			<form action="/playlists/{{playlist.id}}/{{song.id}}/delete" method="POST">
-				<button type="submit" class="btn btn-danger">Delete Song</button>
-			</form>
+			<button
+				type="submit"
+				class="btn btn-warning"
+				data-playlist-id="{{ playlist.id }}"
+				data-track-id="{{ song.id }}">
+				Delete Song
+			</button>
 		</div>
 	</div>
 </div>

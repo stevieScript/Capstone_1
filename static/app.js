@@ -65,15 +65,15 @@ $(document).ready(function () {
 				playlist_description: playlistDescription,
 				track_id: currentTrackId || null,
 			};
-			// if (currentTrackId) {
-			// 	dataToSend.track_id = currentTrackId;
-			// }
+			if (currentTrackId) {
+				dataToSend.track_id = currentTrackId;
+			}
 			console.log(dataToSend);
 			const response = await axios.post('/playlists/add', dataToSend);
 			console.log(response);
-			// if (response.status === 200) {
-			// 	window.location.reload();
-			// }
+			if (response.status === 200) {
+				window.location.reload();
+			}
 		} catch (error) {
 			console.error(error);
 		}
@@ -93,6 +93,31 @@ $(document).ready(function () {
 			if (response.status === 200) {
 				// Handle successful deletion, e.g., remove the card from the UI
 				$(`[data-playlist-id="${playlistId}"]`).closest('.card').remove();
+				window.location.reload();
+			} else {
+				// Handle deletion error, show an error message, etc.
+				console.error('Failed to delete playlist.');
+			}
+		} catch (error) {
+			// Handle any errors that may occur during the deletion process
+			console.error('An error occurred while deleting the playlist:', error);
+		}
+	}
+	$('.btn-warning').click(async function (event) {
+		event.preventDefault();
+		const playlistId = $(this).attr('data-playlist-id');
+		const trackId = $(this).attr('data-track-id');
+		await deletePlaylistSong(playlistId, trackId);
+	});
+
+	async function deletePlaylistSong(playlistId, trackId) {
+		try {
+			// Use Axios to send the delete request
+			const response = await axios.delete(`/playlists/${playlistId}/${trackId}/delete`);
+
+			if (response.status === 200) {
+				// Handle successful deletion, e.g., remove the card from the UI
+				$(`[data-track-id="${playlistId}"]`).closest('.card').remove();
 				window.location.reload();
 			} else {
 				// Handle deletion error, show an error message, etc.
